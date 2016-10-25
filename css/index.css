@@ -1,0 +1,130 @@
+/*header {
+	position: relative;
+	background: #0971f2;
+	border-bottom: 1px solid #353535;
+	height: 100px;
+  width: 100%;
+  opacity: 0.9;
+}
+nav {
+  margin-top: 15px;
+  opacity: 0.9;
+}
+.bg {
+  height: 100vh;
+  background-image: url(../images/bg.jpg);
+  background-attachment: fixed;
+	background-position: 50% 0%;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+.text {
+  color: red;
+  font-size: 20px;
+}*/
+
+body {
+	background: #1a1a1a !important; /* #303030 */
+	font-family: Poppins, sans-serif;
+	color: #fff !important;
+	-webkit-user-select: none;
+}
+
+nav {
+	background-color: #303030;
+}
+
+nav a {
+  color: #32CD32 !important;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+header {
+	position: relative;
+	text-align: center;
+}
+
+article {
+  margin-top: 100px;
+  height: 700px;
+}
+
+
+
+.border {
+	border: 2px solid #0971f2;
+}
+
+.border-l {
+	border-left: 2px solid #0971f2;
+}
+
+.border-r {
+	border-right: 2px solid #0971f2;
+}
+
+.brand {
+	color: yellow !important;
+}
+
+.bt {
+	height: 50px;
+	width: 100px;
+	background: #0c9c0d linear-gradient(#82d18d, #0c9c0d);
+	border: 0;
+	font-weight: bold;
+	font-size: 150%;
+}
+
+.xx {
+	height: 40px !important;
+	margin-top: 5px;
+}
+
+input[type="text"] {
+  background-color: #FFFAFA;
+}
+
+.input2::-webkit-input-placeholder       {text-indent: 0px;   transition: text-indent 0.3s ease;}
+.input2::-moz-placeholder                {text-indent: 0px;   transition: text-indent 0.3s ease;}
+.input2:-moz-placeholder                 {text-indent: 0px;   transition: text-indent 0.3s ease;}
+.input2:-ms-input-placeholder            {text-indent: 0px;   transition: text-indent 0.3s ease;}
+.input2:focus::-webkit-input-placeholder {text-indent: 500px; transition: text-indent 0.3s ease;}
+.input2:focus::-moz-placeholder          {text-indent: 500px; transition: text-indent 0.3s ease;}
+.input2:focus:-moz-placeholder           {text-indent: 500px; transition: text-indent 0.3s ease;}
+.input2:focus:-ms-input-placeholder      {text-indent: 500px; transition: text-indent 0.3s ease;}
+
+
+
+
+
+
+
+/*    footer    */
+
+footer {
+	position: relative;
+	background: #0d0d0d;
+	border-top: 1px solid #353535;
+	color: #888;
+	height: 100px;
+	text-align: center;
+}
+
+#footer-copyright {
+	position: relative;
+	width: 100%;
+	margin-top: 40px;
+}
+
+footer a {
+	color: #D2B48C;
+	text-decoration: none;
+}
+
+footer a:hover {
+	color: #98FB98;
+	text-decoration: underline;
+}
