@@ -1,0 +1,113 @@
+#content {
+	margin: 0 20px 0 20px;
+	position: relative;
+	height: 385px;
+}
+
+.edit {
+	margin-top: -11px;
+	margin-left: 20px;
+	float: left;
+}
+
+.delete {
+	margin-top: -11px;
+	margin-right: 20px;
+	float: right;
+}
+
+.row {
+	position: relative;
+  text-align: center;
+	height: 242px;
+	width: 750px;
+  margin: auto;
+	margin-top: 50px;
+}
+
+.img {
+  width: 400px;
+	height: 100%;
+  float: left;
+	text-align: center;
+}
+
+img {
+  height: 220px;
+	border-radius: 5px;
+  border: 3px solid #00a8e1;
+}
+
+.info {
+  width: 325px;
+	height: 100%;
+  float: left;
+}
+
+.button5 {
+	position: relative;
+	margin: auto;
+	margin-top: 70px;
+	height: 50px;
+	width: 425px;
+}
+
+#btn1 {
+	position: relative;
+	float: left;
+	width: 200px;
+	height: 50px;
+}
+
+#btn2 {
+	position: relative;
+	float: right;
+	width: 200px;
+	height: 50px;
+}
+
+table {
+  border-spacing: 0 10px;
+  font-weight: bold;
+	margin-top: -7px;
+}
+
+td {
+  vertical-align: middle;
+  padding: 8px;
+  font-size: 14px;
+  text-align: center;
+
+  border-top: 2px solid #56433D;
+  border-bottom: 2px solid #56433D;
+  border-right: 2px solid #56433D;
+  border-left: 2px solid #56433D;
+}
+
+.orange {
+	-moz-box-shadow:inset 50px 50px 50px 50px #f57b1e;
+	-webkit-box-shadow:inset 50px 50px 50px 50px #f57b1e;
+	box-shadow:inset 50px 50px 50px 50px #f57b1e;
+	background-color: #a73f2d;
+}
+
+.red {
+	background-color: #b33232;
+}
+
+.myButton {
+	display: inline-block;
+	width: 100px;
+	color: #ffffff;
+	font-family: Arial;
+	font-size: 18px;
+	font-weight: bold;
+	padding: 20px 30px;
+	border-radius: 3px;
+	text-decoration: none;
+}
+
+.myButton:active {
+	position: relative;
+	top: 1px;
+}

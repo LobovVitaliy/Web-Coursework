@@ -1,0 +1,136 @@
+#content {
+	margin: 0 20px 0 20px;
+	position: relative;
+	height: 425px;
+}
+
+.row {
+	position: relative;
+  text-align: center;
+	height: 242px;
+	width: 750px;
+  margin: auto;
+	margin-top: 50px;
+}
+
+.img {
+  width: 400px;
+	height: 100%;
+  float: left;
+	text-align: center;
+}
+
+img {
+  height: 220px;
+	border-radius: 5px;
+  border: 3px solid #00a8e1;
+}
+
+.info {
+  width: 325px;
+	height: 100%;
+  float: left;
+}
+
+.button5 {
+	position: relative;
+	margin: auto;
+	margin-top: 70px;
+	height: 50px;
+	width: 425px;
+}
+
+#btn1 {
+	position: relative;
+	float: left;
+	width: 200px;
+	height: 50px;
+}
+
+#btn2 {
+	position: relative;
+	float: right;
+	width: 200px;
+	height: 50px;
+}
+
+table {
+  border-spacing: 0 10px;
+  font-weight: bold;
+	margin-top: -7px;
+}
+
+td {
+  vertical-align: middle;
+  font-size: 14px;
+  text-align: center;
+
+  border-top: 2px solid #56433D;
+  border-bottom: 2px solid #56433D;
+  border-right: 2px solid #56433D;
+  border-left: 2px solid #56433D;
+}
+
+.key {
+	padding: 8px;
+}
+
+input[type="text"] {
+  background-color: transparent;
+  font-size: 14px;
+  height: 100%;
+	width: 88px;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  border: 0px;
+}
+
+.m-top {
+	text-align: center;
+	margin-top: 10px;
+	width: 100%;
+}
+
+.a_demo_four {
+	background-color: green;
+	font-family: 'Open Sans', sans-serif;
+	font-size:20px;
+	font-weight: bold;
+	text-decoration:none;
+	color:#fff;
+	position:relative;
+	padding:10px 20px;
+	padding-right:50px;
+	background-image: linear-gradient(bottom, rgb(62,51,46) 0%, rgb(101,86,78) 100%);
+	border-radius: 5px;
+	box-shadow: inset 0px 1px 0px #9e8d84, 0px 5px 0px 0px #322620, 0px 10px 5px #999;
+}
+
+.a_demo_four:active {
+	top:3px;
+	background-image: linear-gradient(bottom, rgb(62,51,46) 100%, rgb(101,86,78) 0%);
+	box-shadow: inset 0px 1px 0px #9e8d84, 0px 2px 0px 0px #322620, 0px 5px 3px #999;
+}
+
+.a_demo_four::before {
+	background-color:#322620;
+	background-image:url(../images/right_arrow.png);
+	background-repeat:no-repeat;
+	background-position:center center;
+	content:"";
+	width:20px;
+	height:20px;
+	position:absolute;
+	right:15px;
+	top:50%;
+	margin-top:-9px;
+	border-radius: 50%;
+	box-shadow: inset 0px 1px 0px #19120f, 0px 1px 0px #827066;
+}
+
+.a_demo_four:active::before {
+	top:50%;
+	margin-top:-12px;
+	box-shadow: inset 0px 1px 0px #827066, 0px 3px 0px #19120f, 0px 6px 3px #382e29;
+}
