@@ -1,13 +1,29 @@
-"""from django.db import models
+from django.db import models
 from mongoengine import *
 
 # Create your models here.
 
-class ScrumMaster(Document):
-    sm_id = StringField(required = True)
+class User(Document):
+    meta = {'collection': 'users'}
+
+    role = StringField(default = 'user')
     name = StringField(required = True)
-    surname = StringField(required = True)
-    date = StringField(max_length = 10)
-    count = StringField(max_length = 10)
-    score = StringField(max_length = 10)
-    img = StringField(required = True)"""
+    mail = EmailField(required = True, unique = True)
+    password = StringField(required = True, min_length = 5)
+    image = StringField()
+    gender = StringField()
+    about = StringField()
+
+class Film(Document):
+    meta = {'collection': 'films'}
+
+    name = StringField(required = True)
+    image = StringField(required = True)
+    about = StringField(required = True)
+    country = StringField(required = True)
+    year = StringField(required = True, max_length = 4)
+    genre = StringField(required = True)
+    duration = StringField(required = True)
+    producer = StringField(required = True)
+    actors = StringField(required = True)
+    film  = StringField(required = True)

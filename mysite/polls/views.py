@@ -2,6 +2,11 @@ from django.shortcuts import render, redirect
 from django.http import QueryDict
 from pymongo import MongoClient
 
+from django.core.paginator import Paginator
+
+from polls.models import User, Film
+# from mongoengine import *
+
 import random, json
 
 def check_keys(body, keys):
@@ -23,57 +28,11 @@ def check_keys(body, keys):
 
     return True
 
-def check_signup(body):
-    keys = ['name', 'mail', 'password_1', 'password_2']
-
-    if not check_keys(body, keys):
-        pass # error
-
-    if len(body['name']) > 20:
-        pass # error
-    if len(body['mail']) > 50:
-        pass # error
-    if body['mail'].find('@') == -1:
-        pass # error
-    if body['password_1'] != body['password_2']:
-        pass # error
-
-    return True
-
-def check_signin(body):
-    keys = ['mail', 'password']
-
-    if not check_keys(body, keys):
-        pass # error
-
-    if len(body['mail']) > 50:
-        pass # error
-    if body['mail'].find('@') == -1:
-        pass # error
-
-    return True
-
 # Create your views here.
 
 def home(request):
     if request.method == 'GET':
-        client = MongoClient()
-        collection = client.mysite.users
-
-        collection.insert ({
-            'role': 'admin',
-            'name': 'Vitaliy',
-            'mail': '1234@gmail.ru',
-            'password': '12345',
-            'gender': 'man',
-            'image': 'none',
-            'about': 'none'
-        })
-
-        client.close();
-
-        return render(request, 'html/index.html', {})
-        #return render(request, 'html/home.html', {})
+        return render(request, 'html/home.html', {})
     else:
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
@@ -81,16 +40,23 @@ def signup(request):
     if request.method == 'GET':
         return render(request, 'html/signup.html', {})
     elif request.method == 'POST':
-        body = QueryDict(request.body.decode('utf-8'))
+        name = request.POST.get('name', '').replace(' ', '')
+        mail = request.POST.get('mail', '').replace(' ', '')
+        password_1 = request.POST.get('password_1', '').replace(' ', '')
+        password_2 = request.POST.get('password_2', '').replace(' ', '')
 
-        check, error = check_signup(body)
-
-        if check:
-            pass # add to bd
+        if name and mail and password_1 and password_2:
+            if password_1 == password_2:
+                try:
+                    user = User.objects.create(name = name, mail = mail, password = password_1)
+                    # user, created = User.objects.get_or_create(mail = mail, defaults = {'name': name, 'password': password_1})
+                    return render(request, 'html/signup.html', {})
+                except:
+                    return render(request, 'html/Error.html', {'error': 'Неверный ввод!'})
+            else:
+                return render(request, 'html/Error.html', {'error': 'Пароли не совпадают!'})
         else:
-            pass # error
-
-        return render(request, 'html/index.html', {})
+            return render(request, 'html/Error.html', {'error': '404 Not Found!'})
     else:
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
@@ -98,16 +64,20 @@ def signin(request):
     if request.method == 'GET':
         return render(request, 'html/signin.html', {})
     elif request.method == 'POST':
-        body = QueryDict(request.body.decode('utf-8'))
+        mail = request.POST.get('mail', '').replace(' ', '')
+        password = request.POST.get('password', '').replace(' ', '')
 
-        check, error = check_signin(body)
-
-        if check:
-            pass # sign in
+        if mail and password:
+            try:
+                user = User.objects.get(mail = mail)
+                if user.password == password:
+                    return render(request, 'html/home.html', {})
+                else:
+                    return render(request, 'html/Error.html', {'error': 'Неверный пароль!'})
+            except:
+                return render(request, 'html/Error.html', {'error': 'Неверный mail!'})
         else:
-            pass # error
-
-        return render(request, 'html/index.html', {})
+            return render(request, 'html/Error.html', {'error': '404 Not Found!'})
     else:
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
@@ -119,40 +89,58 @@ def restore(request):
     else:
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
-def films(request, page):
+def films(request, page_number):
     if request.method == 'GET':
-        client = MongoClient()
-        collection = client.mysite.films
+        films = Film.objects.all()
+        current_page = Paginator(films, 2)
+        return render(request, 'html/films.html', {'films': films, 'articles': current_page.page(page_number)})
+    if request.method == 'POST':
+        name = request.POST.get('name', '').replace(' ', '')
+        image = request.POST.get('image', '').replace(' ', '')
+        about = request.POST.get('about', '').replace(' ', '')
+        country = request.POST.get('country', '').replace(' ', '')
+        year = request.POST.get('year', '').replace(' ', '')
+        genre = request.POST.get('genre', '').replace(' ', '')
+        duration = request.POST.get('duration', '').replace(' ', '')
+        producer = request.POST.get('producer', '').replace(' ', '')
+        actors = request.POST.get('actors', '').replace(' ', '')
+        film = request.POST.get('film', '').replace(' ', '')
 
-        collection.insert ({
-            'name': '',
-            'image': '',
-            'about': '',
-            'country': '',
-            'year': '',
-            'genre': '',
-            'duration': '',
-            'producer': '',
-            'actors': '',
-            'story': '',
-            'film': ''
-        })
-
-        client.close();
-
-        return render(request, 'html/index.html', {})
-        #return render(request, 'html/films.html', {})
+        if name and image and about and country and year and genre and duration and producer and actors and film:
+            try:
+                film = Film.objects.create(
+                    name = name,
+                    image = image,
+                    about = about,
+                    country = country,
+                    year = year,
+                    genre = genre,
+                    duration = duration,
+                    producer = producer,
+                    actors = actors,
+                    film = film
+                )
+                # get_or_create
+                return render(request, 'html/films.html', {})
+            except:
+                return render(request, 'html/Error.html', {'error': 'Неверный ввод!'})
+        else:
+            return render(request, 'html/Error.html', {'error': '404 Not Found!'})
     else:
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
 def filminfo(request, id):
     if request.method == 'GET':
+        maxCount = Film.objects.count()
+
         if int(id) >= 1 and int(id) <= maxCount:
-            return render(request, 'html/filminfo.html', {'film': film})
+            return render(request, 'html/filminfo.html', {})
         else:
             return render(request, 'html/Error.html', {'error': '404 Not Found!'})
     else:
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
+
+
 
 
 
