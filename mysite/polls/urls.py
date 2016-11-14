@@ -6,8 +6,10 @@ urlpatterns = [
     url(r'^signup$', views.signup, name = 'signup'),
     url(r'^signin$', views.signin, name = 'signin'),
     url(r'^restore$', views.restore, name = 'restore'), # востановление
-    url(r'^films/page/(?P<page_number>\d+)$', views.films, name = 'films'),
-    url(r'^filminfo/(?P<id>\d+)$', views.filminfo, name = 'filminfo'),
+    url(r'^films/page/(\d+)$', views.films, name = 'films'),
+    url(r'^filminfo/([\w ]+)$', views.filminfo, name = 'filminfo'),
+
+    url(r'^addfilm$', views.addfilm, name = 'addfilm'),
 
     #url(r'^personal$', views.personal, name = 'personal'),
     #url(r'^myfilms$', views.myfilms, name = 'myfilms'),

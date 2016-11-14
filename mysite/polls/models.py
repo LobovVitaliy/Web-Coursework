@@ -7,17 +7,17 @@ class User(Document):
     meta = {'collection': 'users'}
 
     role = StringField(default = 'user')
-    name = StringField(required = True)
+    name = StringField(required = True) # пробелы
     mail = EmailField(required = True, unique = True)
-    password = StringField(required = True, min_length = 5)
+    password = StringField(required = True)
     image = StringField()
     gender = StringField()
-    about = StringField()
+    about = StringField() # пробелы
 
 class Film(Document):
     meta = {'collection': 'films'}
 
-    name = StringField(required = True)
+    name = StringField(required = True, unique = True)
     image = StringField(required = True)
     about = StringField(required = True)
     country = StringField(required = True)
