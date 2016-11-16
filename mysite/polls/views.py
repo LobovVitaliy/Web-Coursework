@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from django.http import QueryDict
-from pymongo import MongoClient
+#from django.http import QueryDict
+#from pymongo import MongoClient
 
 from django.core.paginator import Paginator
 from mongoengine.errors import NotUniqueError, ValidationError
@@ -14,8 +14,9 @@ print ( check_password('testing', a))
 print ( check_password('testing', b))"""
 
 from polls.models import User, Film
-import math, hashlib
-import random, json
+import math, hashlib, datetime
+
+#import random, json
 
 def make_password(password):
     salt = '&e2g$jR-%/frwR0()2>d#'
@@ -28,6 +29,9 @@ def check_password(hash, password):
 
 # Create your views here.
 
+def error(request):
+    return render(request, 'html/Error.html', {'error': '404 Not Found!'})
+
 def home(request):
     if request.method == 'GET':
         return render(request, 'html/home.html', {})
@@ -38,8 +42,7 @@ def signup(request):
     if request.method == 'GET':
         return render(request, 'html/signup.html', {})
     elif request.method == 'POST':
-        name = request.POST.get('name', '').strip()
-        name = ' '.join(name.split()) # несколько пробелов заменяются одним
+        name = ' '.join(request.POST.get('name', '').strip().split()) # убирает пробелы beg-end; несколько пробелов заменяются одним
         mail = request.POST.get('mail', '').replace(' ', '')
         password_1 = request.POST.get('password_1', '').replace(' ', '')
         password_2 = request.POST.get('password_2', '').replace(' ', '')
@@ -54,7 +57,7 @@ def signup(request):
                 except NotUniqueError:
                     return render(request, 'html/Error.html', {'error': 'Mail уже существует!'})
                 except ValidationError:
-                    return render(request, 'html/Error.html', {'error': 'Некорректный ввод mail или пароля!'})
+                    return render(request, 'html/Error.html', {'error': 'Некорректный ввод mail!'})
                 except:
                     return render(request, 'html/Error.html', {'error': 'Неизвестная ошибка!'})
             else:
@@ -89,17 +92,21 @@ def restore(request):
     if request.method == 'GET':
         return render(request, 'html/restore.html', {})
     elif request.method == 'POST':
-        pass
+        return render(request, 'html/restore.html', {})
     else:
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
 def films(request, page_number):
     if request.method == 'GET':
+        value = ' '.join(request.GET.get('value', '').strip().split())
         count_films_on_page = 4
-        maxCount = Film.objects.count()
 
-        if int(page_number) >= 1 and int(page_number) <= math.ceil(maxCount / count_films_on_page):
+        if not value:
             films = Film.objects.all()
+        else:
+            films = Film.objects.filter(name__icontains = value)
+
+        if int(page_number) >= 1 and int(page_number) <= math.ceil(len(films) / count_films_on_page):
             current_page = Paginator(films, count_films_on_page)
             return render(request, 'html/films.html', {'films': current_page.page(page_number)})
         else:
@@ -118,7 +125,49 @@ def filminfo(request, name):
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
 
+# TODO:
+def rating(request): # переделать
+    if request.method == 'POST':
+        name = ' '.join(request.POST.get('name', '').strip().split())
+        rate = request.POST.get('rate', '').replace(' ', '')
 
+        Film.objects(name = name).update(set__film = rate) # изменить бд, проверки
+        return redirect('/filminfo/' + name)
+    else:
+        return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
+
+def add(request): # add_to_my_films
+    if request.method == 'POST':
+        name = ' '.join(request.POST.get('name', '').strip().split())
+
+        if name:
+            film = Film.objects.get(name = name)
+            user = User.objects.get(mail = 'mail@mail.ru') # конкретного юзера которые зарегался (сессии)
+            myfilm = {'film': film, 'grade': 0, 'date': datetime.datetime.now()}
+            user.update(add_to_set__films = myfilm)
+
+            user = User.objects.get(mail = 'mail@mail.ru') # конкретного юзера которые зарегался (сессии)
+            print (user.films[0]['film'].name)
+
+            return render(request, 'html/Error.html', {'error': 'Ок!'}) # изменить страницу
+        else:
+            return render(request, 'html/Error.html', {'error': '400 Bad Request!'})
+    else:
+        return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
+
+def sort(request):
+    if request.method == 'GET':
+        value = ' '.join(request.GET.get('value', '').strip().split())
+
+        if value:
+            people = User.objects.order_by('-grade')    # поправить
+            for p in people:
+                print(p.name + '   ' + p.mail)
+            return render(request, 'html/Error.html', {'error': 'Ок!'}) # изменить страницу
+        else:
+            return render(request, 'html/Error.html', {'error': '400 Bad Request!'})
+    else:
+        return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
 
 def addfilm(request):

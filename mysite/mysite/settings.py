@@ -88,6 +88,9 @@ DATABASES = {
     'default': {'ENGINE': 'django.db.backends.dummy'}
 }
 
+#SESSION_ENGINE = 'mongoengine.django.sessions'
+#SESSION_SERIALIZER = 'mongoengine.django.sessions.BSONSerializer'
+
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',

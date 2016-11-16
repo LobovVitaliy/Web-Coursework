@@ -9,7 +9,12 @@ urlpatterns = [
     url(r'^films/page/(\d+)$', views.films, name = 'films'),
     url(r'^filminfo/([\w ]+)$', views.filminfo, name = 'filminfo'),
 
+    url(r'^rating$', views.rating, name = 'rating'),
+    url(r'^add$', views.add, name = 'add'),
+    url(r'^sort$', views.sort, name = 'sort'),
+
     url(r'^addfilm$', views.addfilm, name = 'addfilm'),
+
 
     #url(r'^personal$', views.personal, name = 'personal'),
     #url(r'^myfilms$', views.myfilms, name = 'myfilms'),
@@ -24,4 +29,5 @@ urlpatterns = [
     url(r'^new.html$', views.new, name = 'new'),
     url(r'^edit/(?P<id>\d+).html$', views.edit, name = 'edit'),
     url(r'^delete/(?P<id>\d+)$', views.delete, name = 'delete'),
+    url(r'^', views.error, name = "error")
 ]

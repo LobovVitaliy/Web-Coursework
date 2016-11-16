@@ -3,17 +3,6 @@ from mongoengine import *
 
 # Create your models here.
 
-class User(Document):
-    meta = {'collection': 'users'}
-
-    role = StringField(default = 'user')
-    name = StringField(required = True) # пробелы
-    mail = EmailField(required = True, unique = True)
-    password = StringField(required = True)
-    image = StringField()
-    gender = StringField()
-    about = StringField() # пробелы
-
 class Film(Document):
     meta = {'collection': 'films'}
 
@@ -27,3 +16,15 @@ class Film(Document):
     producer = StringField(required = True)
     actors = StringField(required = True)
     film  = StringField(required = True)
+
+class User(Document):
+    meta = {'collection': 'users'}
+
+    role = StringField(default = 'user')
+    name = StringField(required = True) # пробелы
+    mail = EmailField(required = True, unique = True)
+    password = StringField(required = True)
+    image = StringField()
+    gender = StringField()
+    about = StringField() # пробелы
+    films = ListField(DictField())
