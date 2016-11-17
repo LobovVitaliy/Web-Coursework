@@ -37,8 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'mongoengine.django.mongo_auth', # new
     'polls',
 ]
+
+AUTH_USER_MODEL = 'mongo_auth.MongoUser'  # new
+MONGOENGINE_USER_DOCUMENT = 'mongoengine.django.auth.User'  # new
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -88,8 +92,12 @@ DATABASES = {
     'default': {'ENGINE': 'django.db.backends.dummy'}
 }
 
-#SESSION_ENGINE = 'mongoengine.django.sessions'
-#SESSION_SERIALIZER = 'mongoengine.django.sessions.BSONSerializer'
+SESSION_ENGINE = 'mongoengine.django.sessions'  # new
+#SESSION_SERIALIZER = 'mongoengine.django.sessions.BSONSerializer'   # new
+
+AUTHENTICATION_BACKENDS = [ # new
+    'mongoengine.django.auth.MongoEngineBackend',
+]
 
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (

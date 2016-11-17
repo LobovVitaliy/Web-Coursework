@@ -38,6 +38,9 @@ def home(request):
     else:
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
+
+
+# TODO:
 def signup(request):
     if request.method == 'GET':
         return render(request, 'html/signup.html', {})
@@ -67,7 +70,7 @@ def signup(request):
     else:
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
-def signin(request):
+def login(request):
     if request.method == 'GET':
         return render(request, 'html/signin.html', {})
     elif request.method == 'POST':
@@ -170,6 +173,17 @@ def sort(request):
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
 
+def logout(request):
+    try:
+        del request.session['id']
+    except KeyError:
+        pass
+    return render(request, 'html/home.html', {})
+
+
+
+
+
 def addfilm(request):
     if request.method == 'POST':
         name = request.POST.get('name', '').strip()
@@ -205,6 +219,41 @@ def addfilm(request):
         else:
             return render(request, 'html/Error.html', {'error': '400 Bad Request!'})
 
+
+
+
+def a(request):
+    user = User.objects.get(name = 'name4')
+
+    request.session['id'] = str(user.id)
+    print(request.session['id'])
+
+    #request.session['pause'] = True
+    return render(request, 'html/Error.html', {'error': 'Ок!'}) # изменить страницу
+
+def b(request):
+    print('###########################################')
+    if 'id' in request.session :
+        print('Есть1')
+    else:
+        print('Нету1')
+
+    if request.session.has_key('id'):
+        print('Есть2')
+    else:
+        print('Нету2')
+
+    if request.session.get('id', False):
+        print('Есть3')
+    else:
+        print('err')
+
+    #request.session['pause'] = False
+    try:
+        del request.session['id']
+    except KeyError:
+        pass
+    return render(request, 'html/Error.html', {'error': 'Ок!'}) # изменить страницу
 
 
 
