@@ -15,7 +15,7 @@ class Film(Document):
     duration = StringField(required = True)
     producer = StringField(required = True)
     actors = StringField(required = True)
-    film  = StringField(required = True)
+    video  = StringField(required = True)
 
 class User(Document):
     meta = {'collection': 'users'}

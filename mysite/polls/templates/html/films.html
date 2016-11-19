@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 
+{% load staticfiles %}
+
 <html>
 	<head>
 		<meta charset="UTF-8">
@@ -14,11 +16,28 @@
 	</head>
 
 	<body>
+		<a href="/">Вернуться на главную</a>
+		<hr>
     <h1>Films</h1>
 
-    {% for film in films %}
-      Name: {{film.name}}<br>
-    {% endfor %}
+		{% if not ismyfilms %}
+			{% for film in films %}
+				Name: <a href="/filminfo/{{film.name}}">{{film.name}}</a><br>
+				<img src="/polls/static/media/{{film.image}}" width="150" /><br>
+			{% endfor %}
+		{% else %}
+			{% for film in films %}
+				Name: <a href="/filminfo/{{film.film.name}}">{{film.film.name}}</a><br>
+				Grade: {{film.grade}}<br>
+				<img src="/polls/static/media/{{film.film.image}}" width="150" /><br>
+			{% endfor %}
+
+			Поиск:
+			<form action="/myfilms/page/1" method="GET">
+				<input type="text" name="value" value="">
+				<input type="submit" name="submit" value="Поиск">
+			</form>
+		{% endif %}
 
     <div class="row">
         <div class="large-3 large-offset-5 columns">

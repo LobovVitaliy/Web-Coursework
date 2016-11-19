@@ -8,6 +8,11 @@
 	</head>
 
 	<body>
-    <h1>Film info</h1>
+		<a href="/">Вернуться на главную</a>
+		<hr>
+    <h1>Film info: {{film.name}}</h1><br>
+		<video name='{{film.name}}' controls autoplay poster="" width='50%' height='40%'>
+			<source src="/polls/static/media/{{film.video}}" type="video/mp4"></source>
+		</video>
 	</body>
 </html>

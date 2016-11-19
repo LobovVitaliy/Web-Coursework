@@ -1,140 +1,274 @@
-from django.http import QueryDict, HttpResponse
-from pymongo import MongoClient
+from django.core.paginator import Paginator
+from django.http import HttpResponse
+from django.conf import settings
 
-import json
+from polls.models import User, Film
+import math, hashlib, datetime, os, json
+
+def make_password(password):
+    salt = '&e2g$jR-%/frwR0()2>d#'
+    hash = hashlib.md5(bytes(password + salt, encoding = 'utf-8')).hexdigest()
+    return hash
+
+def check_password(hash, password):
+    generated_hash = make_password(password)
+    return hash == generated_hash
+
+def save_file(f, root):
+    path = os.path.join(settings.BASE_DIR + settings.MEDIA_URL, root)
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    with open(os.path.join(path, f.name), 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
+
+    return str(root + '/' + f.name)
 
 # Create your views here.
 
-def all(request):
-    if request.method == 'GET':
-        client = MongoClient()
-        collection = client.lab4.sm
+def error(request):
+    return HttpResponse(json.dumps({'Error': '404 Not Found!'}), content_type = 'application/json')
 
-        ScrumMasters = []
-        for i in collection.find():
-            ScrumMasters.append(i)
-            ScrumMasters[len(ScrumMasters) - 1].pop('_id')
-
-        client.close();
-        return HttpResponse(json.dumps(ScrumMasters), content_type = 'application/json')
-    else:
-        return HttpResponse(json.dumps({'Error': '405 Method Not Allowed!'}), content_type = 'application/json')
-
-def sort(request, username):
-    if request.method == 'GET':
-        print (request.GET.get(username))
-        client = MongoClient()
-        collection = client.lab4.sm
-
-        ScrumMasters = []
-        for i in collection.find():
-            ScrumMasters.append(i)
-            ScrumMasters[len(ScrumMasters) - 1].pop('_id')
-
-        client.close();
-        return HttpResponse(json.dumps(ScrumMasters), content_type = 'application/json')
-    else:
-        return HttpResponse(json.dumps({'Error': '405 Method Not Allowed!'}), content_type = 'application/json')
-
-# изменить бд в Delete, Put
-# Put: как реагировать на неправильный ключ
-def scrum(request, id):
-    if request.method == 'GET':
-        client = MongoClient()
-        collection = client.lab4.sm
-        ScrumMaster = collection.find_one({'id': id})
-        maxCount = collection.count()
-        client.close();
-
-        if int(id) >= 1 and int(id) <= maxCount:
-            ScrumMaster.pop('_id')
-            return HttpResponse(json.dumps(ScrumMaster), content_type = 'application/json')
-        else:
-            return HttpResponse(json.dumps({'Error': '404 Not Found!'}), content_type = 'application/json')
-    elif request.method == 'PUT':
-        client = MongoClient()
-        collection = client.test.scrum_master   # изменить бд
-        ScrumMaster = collection.find_one({'id': id})
-        maxCount = collection.count()
-
-        if int(id) >= 1 and int(id) <= maxCount:
-            req_body = request.body.decode('utf-8')
-            edit = QueryDict(req_body)
-
-            for key in edit.keys():
-                if key == 'name' or key == 'surname' or key == 'date' or key == 'count' or key == 'score':
-                    collection.update({'id': id}, { "$set": {key: edit[key].replace(' ', '').title()} })
-                else:
-                    print("err key: " + key)
-
-            client.close();
-            return HttpResponse(json.dumps({'Success': 'Successfully updated'}), content_type = 'application/json')
-        else:
-            client.close();
-            return HttpResponse(json.dumps({'Error': '404 Not Found!'}), content_type = 'application/json')
-    elif request.method == 'DELETE':
-        client = MongoClient()
-        collection = client.test.scrum_master   # изменить бд
-        ScrumMaster = collection.find_one({'id': id})
-        maxCount = collection.count()
-
-        if int(id) >= 1 and int(id) <= maxCount:
-            collection.remove({'id': id})
-
-            client.close();
-            return HttpResponse(json.dumps({'Success': 'Successfully deleted'}), content_type = 'application/json')
-        else:
-            client.close();
-            return HttpResponse(json.dumps({'Error': '404 Not Found!'}), content_type = 'application/json')
-    else:
-        return HttpResponse(json.dumps({'Error': '405 Method Not Allowed!'}), content_type = 'application/json')
-
-# Post: должны ли быть заполены все поля
-def new(request):
+def signup(request):
     if request.method == 'POST':
-        req_body = request.body.decode('utf-8')
-        new = QueryDict(req_body)
+        name = ' '.join(request.POST.get('name', '').strip().split()) # убирает пробелы beg-end; несколько пробелов заменяются одним
+        mail = request.POST.get('mail', '').replace(' ', '')
+        password_1 = request.POST.get('password_1', '').replace(' ', '')
+        password_2 = request.POST.get('password_2', '').replace(' ', '')
 
-        client = MongoClient()
-        collection = client.test.scrum_master
+        if name and mail and password_1 and password_2:
+            if password_1 == password_2:
+                try:
+                    password = make_password(password_1)
+                    User.objects.create(name = name, mail = mail, password = password)
+                    # user, created = User.objects.get_or_create(mail = mail, defaults = {'name': name, 'password': password_1})
 
-        # checks
-        keys = ['name', 'surname', 'date', 'count', 'score']
-
-        if len(new.keys()) != len(keys):
-            client.close();
-            return HttpResponse(json.dumps({'Error': '400 Bad Request!'}), content_type = 'application/json')
-
-        for key in new.keys():
-            for i in range(len(keys)):
-                if key == keys[i]:
-                    keys.pop(i)
-                    break
-
-        if len(keys) != 0:
-            client.close();
-            return HttpResponse(json.dumps({'Error': '400 Bad Request!'}), content_type = 'application/json')
-
-        if new.get('name').replace(' ', '') and new.get('surname').replace(' ', '') \
-        and new.get('date').replace(' ', '') and new.get('count').replace(' ', '') \
-        and new.get('score').replace(' ', ''):
-            pass
+                    return HttpResponse(json.dumps({'Success': 'Registration completed successfully'}), content_type = 'application/json')
+                except NotUniqueError:
+                    return HttpResponse(json.dumps({'Error': 'Mail уже существует!'}), content_type = 'application/json')
+                except ValidationError:
+                    return HttpResponse(json.dumps({'Error': 'Некорректный ввод mail!'}), content_type = 'application/json')
+                except:
+                    return HttpResponse(json.dumps({'Error': 'Неизвестная ошибка!'}), content_type = 'application/json')
+            else:
+                return HttpResponse(json.dumps({'Error': 'Пароли не совпадают!'}), content_type = 'application/json')
         else:
-            client.close();
             return HttpResponse(json.dumps({'Error': '400 Bad Request!'}), content_type = 'application/json')
+    else:
+        return HttpResponse(json.dumps({'Error': '405 Method Not Allowed!'}), content_type = 'application/json')
 
-        # end checks
+#new
+def login(request):
+    if request.method == 'POST':
+        mail = request.POST.get('mail', '').replace(' ', '')
+        password = request.POST.get('password', '').replace(' ', '')
 
-        collection.insert ({
-            'id': str(collection.count() + 1),
-            'name': new['name'].title(),
-            'surname': new['surname'].title(),
-            'date': new['date'],
-            'count': new['count'],
-            'score': new['score'],
-        })
+        if mail and password:
+            try:
+                user = User.objects.get(mail = mail)
+                if check_password(user.password, password):
+                    request.session['id'] = str(user.id)
+                    return HttpResponse(json.dumps({'Success': 'Login completed successfully'}), content_type = 'application/json')
+                else:
+                    return HttpResponse(json.dumps({'Error': 'Неверный пароль!'}), content_type = 'application/json')
+            except:
+                return HttpResponse(json.dumps({'Error': 'Неверный mail!'}), content_type = 'application/json')
+        else:
+            return HttpResponse(json.dumps({'Error': '400 Bad Request!'}), content_type = 'application/json')
+    else:
+        return HttpResponse(json.dumps({'Error': '405 Method Not Allowed!'}), content_type = 'application/json')
 
-        client.close();
-        return HttpResponse(json.dumps({'Success': 'Successfully added'}), content_type = 'application/json')
+#new
+def logout(request):
+    try:
+        del request.session['id']
+    except KeyError:
+        pass
+    return HttpResponse(json.dumps({'Success': 'Logout completed successfully'}), content_type = 'application/json')
+
+# TODO: json
+def films(request, page_number):
+    if request.method == 'GET':
+        value = ' '.join(request.GET.get('value', '').strip().split())
+        count_films_on_page = 4
+
+        if not value:
+            films = Film.objects.all()
+        else:
+            films = Film.objects.filter(name__icontains = value)
+
+        if int(page_number) >= 1 and int(page_number) <= math.ceil(len(films) / count_films_on_page):
+            current_page = Paginator(films, count_films_on_page)
+            return HttpResponse(json.dumps(films), content_type = 'application/json')
+            #return HttpResponse(json.dumps(current_page.page(page_number)), content_type = 'application/json')
+        else:
+            return HttpResponse(json.dumps({'Error': '404 Not Found!'}), content_type = 'application/json')
+    else:
+        return HttpResponse(json.dumps({'Error': '405 Method Not Allowed!'}), content_type = 'application/json')
+
+# TODO: json
+def filminfo(request, name):
+    if request.method == 'GET':
+        try:
+            film = Film.objects.get(name = name)
+            return HttpResponse(json.dumps(film), content_type = 'application/json')
+        except:
+            return HttpResponse(json.dumps({'Error': '404 Not Found!'}), content_type = 'application/json')
+    else:
+        return HttpResponse(json.dumps({'Error': '405 Method Not Allowed!'}), content_type = 'application/json')
+
+# TODO: json (all)
+def rating(request): # переделать
+    if request.method == 'POST':
+        name = ' '.join(request.POST.get('name', '').strip().split())
+        grade = request.POST.get('grade', '').replace(' ', '')
+
+        #film = Film.objects.get(name = name)
+
+        #user = User.objects.get(films = film)
+        #user.update(add_to_set__films = {'grade': 12})
+
+        if name and grade:
+            if 'id' in request.session:
+                try:
+                    user_id = request.session.get('id')
+                    user = User.objects.get(id = user_id)
+
+                    #user.update(set__films__grade = grade)
+
+                    #Film.objects(name = name).update(set__film = grade) # изменить бд, проверки
+                    return redirect('/filminfo/' + name)
+                except:
+                    return render(request, 'html/Error.html', {'error': '404 Not Found!'})
+            else:
+                return render(request, 'html/Error.html', {'error': '401 Unauthorized!'})
+        else:
+            return render(request, 'html/Error.html', {'error': '400 Bad Request!'})
+    else:
+        return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
+
+# должен работать!!! проверить на уникальность
+def add(request):
+    if request.method == 'POST':
+        name = ' '.join(request.POST.get('name', '').strip().split())
+
+        if name:
+            if 'id' in request.session:
+                try:
+                    user_id = request.session.get('id')
+                    user = User.objects.get(id = user_id)
+                    film = Film.objects.get(name = name)
+                    myfilm = {'film': film, 'grade': 0, 'date': datetime.datetime.now()}
+                    user.update(add_to_set__films = myfilm)
+                    return HttpResponse(json.dumps({'Success': 'Successfully added'}), content_type = 'application/json')
+                except:
+                    return HttpResponse(json.dumps({'Error': '404 Not Found!'}), content_type = 'application/json')
+            else:
+                return HttpResponse(json.dumps({'Error': '401 Unauthorized!'}), content_type = 'application/json')
+        else:
+            return HttpResponse(json.dumps({'Error': '400 Bad Request!'}), content_type = 'application/json')
+    else:
+        return HttpResponse(json.dumps({'Error': '405 Method Not Allowed!'}), content_type = 'application/json')
+
+# TODO: json (all)
+def sort(request):
+    if request.method == 'GET':
+        value = ' '.join(request.GET.get('value', '').strip().split())
+
+        if value:
+            if 'id' in request.session:
+                try:
+                    user_id = request.session.get('id')
+                    user = User.objects.get(id = user_id)
+
+                    #people = User.objects.order_by('-grade')    # поправить
+                    #for p in people:
+                        #print(p.name + '   ' + p.mail)
+
+                    return render(request, 'html/Error.html', {'error': 'Ок!'}) # изменить страницу
+                except:
+                    return render(request, 'html/Error.html', {'error': '404 Not Found!'})
+            else:
+                return render(request, 'html/Error.html', {'error': '401 Unauthorized!'})
+        else:
+            return render(request, 'html/Error.html', {'error': '400 Bad Request!'})
+    else:
+        return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
+
+# должен работать!!!
+# TODO: json
+def myfilms(request, page_number):
+    if request.method == 'GET':
+        value = ' '.join(request.GET.get('value', '').strip().split())
+        count_films_on_page = 4
+
+        if 'id' in request.session:
+            try:
+                user_id = request.session.get('id')
+                user = User.objects.get(id = user_id)
+
+                if not value:
+                    films = user.films
+                else:
+                    films = list(filter(lambda film: film['film'].name == value, user.films))
+
+                if int(page_number) >= 1 and int(page_number) <= math.ceil(len(films) / count_films_on_page):
+                    current_page = Paginator(films, count_films_on_page)
+                    return HttpResponse(json.dumps(films), content_type = 'application/json')
+                    #return HttpResponse(json.dumps(current_page.page(page_number)), content_type = 'application/json')
+                else:
+                    return HttpResponse(json.dumps({'Error': '404 Not Found!'}), content_type = 'application/json')
+            except:
+                return HttpResponse(json.dumps({'Error': '404 Not Found!'}), content_type = 'application/json')
+        else:
+            return HttpResponse(json.dumps({'Error': '401 Unauthorized!'}), content_type = 'application/json')
+    else:
+        return HttpResponse(json.dumps({'Error': '405 Method Not Allowed!'}), content_type = 'application/json')
+
+# должен работать!!!
+def addfilm(request):
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        name = ' '.join(name.split()) # несколько пробелов заменяются одним
+        image = save_file(request.FILES['image'], 'image')
+        about = request.POST.get('about', '').replace(' ', '')
+        country = request.POST.get('country', '').replace(' ', '')
+        year = request.POST.get('year', '').replace(' ', '')
+        genre = request.POST.get('genre', '').replace(' ', '')
+        duration = request.POST.get('duration', '').replace(' ', '')
+        producer = request.POST.get('producer', '').replace(' ', '')
+        actors = request.POST.get('actors', '').replace(' ', '')
+        video = save_file(request.FILES['video'], 'video')
+
+        if 'id' in request.session:
+            user_id = request.session.get('id')
+            user = User.objects.get(id = user_id)
+
+            if user.role == 'admin':
+                if name and image and about and country and year and genre and duration and producer and actors and video:
+                    try:
+                        film = Film.objects.create(
+                            name = name,
+                            image = image,
+                            about = about,
+                            country = country,
+                            year = year,
+                            genre = genre,
+                            duration = duration,
+                            producer = producer,
+                            actors = actors,
+                            video = video
+                        )
+                        # get_or_create
+                        return HttpResponse(json.dumps({'Success': 'Successfully added'}), content_type = 'application/json')
+                    except:
+                        return HttpResponse(json.dumps({'Error': 'Неверный ввод!'}), content_type = 'application/json')
+                else:
+                    return HttpResponse(json.dumps({'Error': '400 Bad Request!'}), content_type = 'application/json')
+            else:
+                return HttpResponse(json.dumps({'Error': '403 Forbidden!'}), content_type = 'application/json')
+        else:
+            return HttpResponse(json.dumps({'Error': '401 Unauthorized!'}), content_type = 'application/json')
     else:
         return HttpResponse(json.dumps({'Error': '405 Method Not Allowed!'}), content_type = 'application/json')

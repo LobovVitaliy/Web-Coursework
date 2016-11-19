@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Course Work</title>
+		<link rel="shortcut icon" href="/static/img/icon.png">
+	</head>
+
+	<body>
+		<a href="/">Вернуться на главную</a>
+		<hr>
+    <h1>Admin (addfilm)</h1>
+
+    <form action="/addfilm" method="POST" enctype="multipart/form-data">
+      <input type="text" name="name" placeholder="name"><br>
+      <input type="text" name="about" placeholder="about"><br>
+      <input type="text" name="country" placeholder="country"><br>
+      <input type="text" name="year" placeholder="year"><br>
+      <input type="text" name="genre" placeholder="genre"><br>
+      <input type="text" name="duration" placeholder="duration"><br>
+      <input type="text" name="producer" placeholder="producer"><br>
+      <input type="text" name="actors" placeholder="actors"><br>
+      <input type="text" name="film" placeholder="film"><br>
+      <input type="file" accept="image/*" name="image" placeholder="image"><br><br>
+
+      <input type="file" accept="video/*" name="video" placeholder="video"><br><br>
+      <input type="submit" name="submit" value="Добавить">
+    </form>
+	</body>
+</html>

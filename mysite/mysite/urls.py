@@ -5,6 +5,6 @@ from django.conf.urls import include, url
 
 urlpatterns = [
     #url(r'^admin', include(admin.site.urls)),
-    url(r'^', include('polls.urls')),
     url(r'^api/', include('polls.api_urls')),
+    url(r'^', include('polls.urls')),
 ]

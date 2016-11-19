@@ -1,22 +1,10 @@
-from django.shortcuts import render, redirect
-#from django.http import QueryDict
-#from pymongo import MongoClient
-
-from django.core.paginator import Paginator
+from django.shortcuts import render, redirect, HttpResponseRedirect
 from mongoengine.errors import NotUniqueError, ValidationError
-
-#from django.contrib.auth.hashers import *
-"""a = make_password(password = 'testing', salt = '123')
-b = make_password(password = 'testing')
-print(a)
-print(b)
-print ( check_password('testing', a))
-print ( check_password('testing', b))"""
+from django.core.paginator import Paginator
+from django.conf import settings
 
 from polls.models import User, Film
-import math, hashlib, datetime
-
-#import random, json
+import math, hashlib, datetime, os
 
 def make_password(password):
     salt = '&e2g$jR-%/frwR0()2>d#'
@@ -27,6 +15,17 @@ def check_password(hash, password):
     generated_hash = make_password(password)
     return hash == generated_hash
 
+def save_file(f, root):
+    path = os.path.join(settings.BASE_DIR + settings.MEDIA_URL, root)
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    with open(os.path.join(path, f.name), 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
+
+    return str(root + '/' + f.name)
+
 # Create your views here.
 
 def error(request):
@@ -34,13 +33,13 @@ def error(request):
 
 def home(request):
     if request.method == 'GET':
-        return render(request, 'html/home.html', {})
+        if 'id' in request.session:
+            return render(request, 'html/home.html', {'registered': True})
+        else:
+            return render(request, 'html/home.html', {'registered': False})
     else:
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
-
-
-# TODO:
 def signup(request):
     if request.method == 'GET':
         return render(request, 'html/signup.html', {})
@@ -56,7 +55,7 @@ def signup(request):
                     password = make_password(password_1)
                     User.objects.create(name = name, mail = mail, password = password)
                     # user, created = User.objects.get_or_create(mail = mail, defaults = {'name': name, 'password': password_1})
-                    return render(request, 'html/signin.html', {})
+                    return render(request, 'html/login.html', {})
                 except NotUniqueError:
                     return render(request, 'html/Error.html', {'error': 'Mail уже существует!'})
                 except ValidationError:
@@ -70,9 +69,10 @@ def signup(request):
     else:
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
+#new
 def login(request):
     if request.method == 'GET':
-        return render(request, 'html/signin.html', {})
+        return render(request, 'html/login.html', {})
     elif request.method == 'POST':
         mail = request.POST.get('mail', '').replace(' ', '')
         password = request.POST.get('password', '').replace(' ', '')
@@ -81,7 +81,8 @@ def login(request):
             try:
                 user = User.objects.get(mail = mail)
                 if check_password(user.password, password):
-                    return render(request, 'html/home.html', {})
+                    request.session['id'] = str(user.id)
+                    return render(request, 'html/home.html', {'registered': True})
                 else:
                     return render(request, 'html/Error.html', {'error': 'Неверный пароль!'})
             except:
@@ -90,6 +91,14 @@ def login(request):
             return render(request, 'html/Error.html', {'error': '400 Bad Request!'})
     else:
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
+
+#new
+def logout(request):
+    try:
+        del request.session['id']
+    except KeyError:
+        pass
+    return render(request, 'html/home.html', {'registered': False})
 
 def restore(request):
     if request.method == 'GET':
@@ -111,7 +120,7 @@ def films(request, page_number):
 
         if int(page_number) >= 1 and int(page_number) <= math.ceil(len(films) / count_films_on_page):
             current_page = Paginator(films, count_films_on_page)
-            return render(request, 'html/films.html', {'films': current_page.page(page_number)})
+            return render(request, 'html/films.html', {'films': current_page.page(page_number), 'ismyfilms': False})
         else:
             return render(request, 'html/Error.html', {'error': '404 Not Found!'})
     else:
@@ -127,68 +136,129 @@ def filminfo(request, name):
     else:
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
-
 # TODO:
 def rating(request): # переделать
     if request.method == 'POST':
         name = ' '.join(request.POST.get('name', '').strip().split())
-        rate = request.POST.get('rate', '').replace(' ', '')
+        grade = request.POST.get('grade', '').replace(' ', '')
 
-        Film.objects(name = name).update(set__film = rate) # изменить бд, проверки
-        return redirect('/filminfo/' + name)
-    else:
-        return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
+        #film = Film.objects.get(name = name)
 
-def add(request): # add_to_my_films
-    if request.method == 'POST':
-        name = ' '.join(request.POST.get('name', '').strip().split())
+        #user = User.objects.get(films = film)
+        #user.update(add_to_set__films = {'grade': 12})
 
-        if name:
-            film = Film.objects.get(name = name)
-            user = User.objects.get(mail = 'mail@mail.ru') # конкретного юзера которые зарегался (сессии)
-            myfilm = {'film': film, 'grade': 0, 'date': datetime.datetime.now()}
-            user.update(add_to_set__films = myfilm)
+        if name and grade:
+            if 'id' in request.session:
+                try:
+                    user_id = request.session.get('id')
+                    user = User.objects.get(id = user_id)
 
-            user = User.objects.get(mail = 'mail@mail.ru') # конкретного юзера которые зарегался (сессии)
-            print (user.films[0]['film'].name)
+                    #user.update(set__films__grade = grade)
 
-            return render(request, 'html/Error.html', {'error': 'Ок!'}) # изменить страницу
+                    #Film.objects(name = name).update(set__film = grade) # изменить бд, проверки
+                    return redirect('/filminfo/' + name)
+                except:
+                    return render(request, 'html/Error.html', {'error': '404 Not Found!'})
+            else:
+                return render(request, 'html/Error.html', {'error': '401 Unauthorized!'})
         else:
             return render(request, 'html/Error.html', {'error': '400 Bad Request!'})
     else:
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
+# должен работать!!! проверить на уникальность
+def add(request):
+    if request.method == 'POST':
+        name = ' '.join(request.POST.get('name', '').strip().split())
+
+        if name:
+            if 'id' in request.session:
+                try:
+                    user_id = request.session.get('id')
+                    user = User.objects.get(id = user_id)
+                    film = Film.objects.get(name = name)
+                    myfilm = {'film': film, 'grade': 0, 'date': datetime.datetime.now()}
+                    user.update(add_to_set__films = myfilm)
+                    return HttpResponseRedirect(request.META.get('HTTP_REFERER','/'))
+                except:
+                    return render(request, 'html/Error.html', {'error': '404 Not Found!'})
+            else:
+                return render(request, 'html/Error.html', {'error': '401 Unauthorized!'})
+        else:
+            return render(request, 'html/Error.html', {'error': '400 Bad Request!'})
+    else:
+        return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
+
+# TODO:
 def sort(request):
     if request.method == 'GET':
         value = ' '.join(request.GET.get('value', '').strip().split())
 
         if value:
-            people = User.objects.order_by('-grade')    # поправить
-            for p in people:
-                print(p.name + '   ' + p.mail)
-            return render(request, 'html/Error.html', {'error': 'Ок!'}) # изменить страницу
+            if 'id' in request.session:
+                try:
+                    user_id = request.session.get('id')
+                    user = User.objects.get(id = user_id)
+
+                    #people = User.objects.order_by('-grade')    # поправить
+                    #for p in people:
+                        #print(p.name + '   ' + p.mail)
+
+                    return render(request, 'html/Error.html', {'error': 'Ок!'}) # изменить страницу
+                except:
+                    return render(request, 'html/Error.html', {'error': '404 Not Found!'})
+            else:
+                return render(request, 'html/Error.html', {'error': '401 Unauthorized!'})
         else:
             return render(request, 'html/Error.html', {'error': '400 Bad Request!'})
     else:
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
+# должен работать!!!
+def myfilms(request, page_number):
+    if request.method == 'GET':
+        value = ' '.join(request.GET.get('value', '').strip().split())
+        count_films_on_page = 4
 
-def logout(request):
-    try:
-        del request.session['id']
-    except KeyError:
-        pass
-    return render(request, 'html/home.html', {})
+        if 'id' in request.session:
+            try:
+                user_id = request.session.get('id')
+                user = User.objects.get(id = user_id)
 
+                if not value:
+                    films = user.films
+                else:
+                    films = list(filter(lambda film: film['film'].name == value, user.films))
 
+                if int(page_number) >= 1 and int(page_number) <= math.ceil(len(films) / count_films_on_page):
+                    current_page = Paginator(films, count_films_on_page)
+                    return render(request, 'html/films.html', {'films': current_page.page(page_number), 'ismyfilms': True})
+                else:
+                    return render(request, 'html/Error.html', {'error': '404 Not Found!'})
+            except:
+                return render(request, 'html/Error.html', {'error': '404 Not Found!'})
+        else:
+            return render(request, 'html/Error.html', {'error': '401 Unauthorized!'})
+    else:
+        return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
-
-
+# должен работать!!!
 def addfilm(request):
-    if request.method == 'POST':
+    if request.method == 'GET':
+        if 'id' in request.session:
+            user_id = request.session.get('id')
+            user = User.objects.get(id = user_id)
+
+            if user.role == 'admin':
+                return render(request, 'html/addfilm.html', {})
+            else:
+                return render(request, 'html/Error.html', {'error': '403 Forbidden!'})
+        else:
+            return render(request, 'html/Error.html', {'error': '401 Unauthorized!'})
+    elif request.method == 'POST':
         name = request.POST.get('name', '').strip()
         name = ' '.join(name.split()) # несколько пробелов заменяются одним
-        image = request.POST.get('image', '').replace(' ', '')
+        image = save_file(request.FILES['image'], 'image')
         about = request.POST.get('about', '').replace(' ', '')
         country = request.POST.get('country', '').replace(' ', '')
         year = request.POST.get('year', '').replace(' ', '')
@@ -196,192 +266,36 @@ def addfilm(request):
         duration = request.POST.get('duration', '').replace(' ', '')
         producer = request.POST.get('producer', '').replace(' ', '')
         actors = request.POST.get('actors', '').replace(' ', '')
-        film = request.POST.get('film', '').replace(' ', '')
+        video = save_file(request.FILES['video'], 'video')
 
-        if name and image and about and country and year and genre and duration and producer and actors and film:
-            try:
-                film = Film.objects.create(
-                    name = name,
-                    image = image,
-                    about = about,
-                    country = country,
-                    year = year,
-                    genre = genre,
-                    duration = duration,
-                    producer = producer,
-                    actors = actors,
-                    film = film
-                )
-                # get_or_create
-                return render(request, 'html/films.html', {})
-            except:
-                return render(request, 'html/Error.html', {'error': 'Неверный ввод!'})
+        if 'id' in request.session:
+            user_id = request.session.get('id')
+            user = User.objects.get(id = user_id)
+
+            if user.role == 'admin':
+                if name and image and about and country and year and genre and duration and producer and actors and video:
+                    try:
+                        film = Film.objects.create(
+                            name = name,
+                            image = image,
+                            about = about,
+                            country = country,
+                            year = year,
+                            genre = genre,
+                            duration = duration,
+                            producer = producer,
+                            actors = actors,
+                            video = video
+                        )
+                        # get_or_create
+                        return HttpResponseRedirect(request.META.get('HTTP_REFERER','/'))
+                    except:
+                        return render(request, 'html/Error.html', {'error': 'Неверный ввод!'})
+                else:
+                    return render(request, 'html/Error.html', {'error': '400 Bad Request!'})
+            else:
+                return render(request, 'html/Error.html', {'error': '403 Forbidden!'})
         else:
-            return render(request, 'html/Error.html', {'error': '400 Bad Request!'})
-
-
-
-
-def a(request):
-    user = User.objects.get(name = 'name4')
-
-    request.session['id'] = str(user.id)
-    print(request.session['id'])
-
-    #request.session['pause'] = True
-    return render(request, 'html/Error.html', {'error': 'Ок!'}) # изменить страницу
-
-def b(request):
-    print('###########################################')
-    if 'id' in request.session :
-        print('Есть1')
+            return render(request, 'html/Error.html', {'error': '401 Unauthorized!'})
     else:
-        print('Нету1')
-
-    if request.session.has_key('id'):
-        print('Есть2')
-    else:
-        print('Нету2')
-
-    if request.session.get('id', False):
-        print('Есть3')
-    else:
-        print('err')
-
-    #request.session['pause'] = False
-    try:
-        del request.session['id']
-    except KeyError:
-        pass
-    return render(request, 'html/Error.html', {'error': 'Ок!'}) # изменить страницу
-
-
-
-
-
-######
-def check_keys(body, keys):
-    if len(body.keys()) != len(keys):
-        return False
-
-    for key in body.keys():
-        for i in range(len(keys)):
-            if key == keys[i]:
-                keys.pop(i)
-                break
-
-    if len(keys) != 0:
-        return False
-
-    for key in body.keys():
-        if not body.get(key).replace(' ', ''):
-            return False
-
-    return True
-######
-
-def index(request):
-    return render(request, 'html/index.html', {})
-
-def all(request):
-    client = MongoClient()
-    collection = client.lab4.sm
-
-    ScrumMasters = []
-    for i in collection.find():
-        ScrumMasters.append(i)
-
-    client.close();
-    return render(request, 'html/all.html', {'rows': ScrumMasters})
-
-def scrum(request, id):
-    client = MongoClient()
-    collection = client.lab4.sm
-    ScrumMaster = collection.find_one({'id': id})
-    maxCount = collection.count()
-    client.close();
-
-    if int(id) >= 1 and int(id) <= maxCount:
-        return render(request, 'html/scrum.html', {'sm': ScrumMaster})
-    else:
-        return render(request, 'html/Error.html', {})
-
-
-# lab5:
-def new(request):
-    if request.method == 'GET':
-        id = random.randint(1, 5)
-        img = "sm_" + str(id) + ".jpg"
-        return render(request, 'html/new.html', {'image': img})
-    elif request.method == 'POST':
-        req_body = request.body.decode('utf-8')
-        new = QueryDict(req_body)
-
-        client = MongoClient()
-        collection = client.test.scrum_master
-
-        if not new['name'].replace(' ', '') or not new['surname'].replace(' ', ''):
-            client.close();
-            return render(request, 'html/Error.html', {})
-
-        collection.insert ({
-            'id': str(collection.count() + 1),
-            'name': new['name'].title(),
-            'surname': new['surname'].title(),
-            'date': new['date'],
-            'count': new['count'],
-            'score': new['score'],
-            'img': new['img']
-        })
-
-        client.close();
-        return redirect('/all.html')
-
-def edit(request, id):
-    client = MongoClient()
-    collection = client.lab4.sm
-    ScrumMaster = collection.find_one({'id': id})
-    maxCount = collection.count()
-
-    if int(id) >= 1 and int(id) <= maxCount:
-        if request.method == 'GET':
-            client.close();
-            return render(request, 'html/edit.html', {'sm': ScrumMaster})
-        elif request.method == 'POST':
-            req_body = request.body.decode('utf-8')
-            edit = QueryDict(req_body)
-
-            if not edit['name'].replace(' ', '') or not edit['surname'].replace(' ', ''):
-                client.close();
-                return render(request, 'html/Error.html', {})
-
-            collection.update ({'id': id}, {
-                'id': id,
-                'name': edit['name'].title(),
-                'surname': edit['surname'].title(),
-                'date': edit['date'],
-                'count': edit['count'],
-                'score': edit['score'],
-                'img': edit['img']
-            })
-
-            client.close();
-            return redirect('/scrum/' + id + '.html')
-    else:
-        client.close();
-        return render(request, 'html/Error.html', {})
-
-def delete(request, id):
-    client = MongoClient()
-    collection = client.test.scrum_master
-    ScrumMaster = collection.find_one({'id': id})
-    maxCount = collection.count()
-
-    if int(id) >= 1 and int(id) <= maxCount:
-        collection.remove({'id': id})
-
-        client.close();
-        return redirect('/all.html')
-    else:
-        client.close();
-        return render(request, 'html/Error.html', {})
+        return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
