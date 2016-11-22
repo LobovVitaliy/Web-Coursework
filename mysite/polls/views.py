@@ -82,7 +82,7 @@ def login(request):
                 user = User.objects.get(mail = mail)
                 if check_password(user.password, password):
                     request.session['id'] = str(user.id)
-                    return render(request, 'html/home.html', {'registered': True})
+                    return redirect('/', {'registered': True})
                 else:
                     return render(request, 'html/Error.html', {'error': 'Неверный пароль!'})
             except:
@@ -98,7 +98,7 @@ def logout(request):
         del request.session['id']
     except KeyError:
         pass
-    return render(request, 'html/home.html', {'registered': False})
+    return redirect('/', {'registered': False})
 
 def restore(request):
     if request.method == 'GET':
@@ -221,22 +221,24 @@ def myfilms(request, page_number):
         count_films_on_page = 4
 
         if 'id' in request.session:
-            try:
-                user_id = request.session.get('id')
-                user = User.objects.get(id = user_id)
+            #try:
+            user_id = request.session.get('id')
+            user = User.objects.get(id = user_id)
 
-                if not value:
-                    films = user.films
-                else:
-                    films = list(filter(lambda film: film['film'].name == value, user.films))
+            if not value:
+                films = user.films
+            else:
+                for film in user.films:
+                    print(film['film'].name)
+                films = list(filter(lambda film: film['film'].name == value, user.films))
 
-                if int(page_number) >= 1 and int(page_number) <= math.ceil(len(films) / count_films_on_page):
-                    current_page = Paginator(films, count_films_on_page)
-                    return render(request, 'html/films.html', {'films': current_page.page(page_number), 'ismyfilms': True})
-                else:
-                    return render(request, 'html/Error.html', {'error': '404 Not Found!'})
-            except:
+            if int(page_number) >= 1 and int(page_number) <= math.ceil(len(films) / count_films_on_page):
+                current_page = Paginator(films, count_films_on_page)
+                return render(request, 'html/films.html', {'films': current_page.page(page_number), 'ismyfilms': True})
+            else:
                 return render(request, 'html/Error.html', {'error': '404 Not Found!'})
+            #except:
+                #return render(request, 'html/Error.html', {'error': '404 Not Found!'})
         else:
             return render(request, 'html/Error.html', {'error': '401 Unauthorized!'})
     else:
@@ -256,17 +258,20 @@ def addfilm(request):
         else:
             return render(request, 'html/Error.html', {'error': '401 Unauthorized!'})
     elif request.method == 'POST':
-        name = request.POST.get('name', '').strip()
-        name = ' '.join(name.split()) # несколько пробелов заменяются одним
-        image = save_file(request.FILES['image'], 'image')
-        about = request.POST.get('about', '').replace(' ', '')
-        country = request.POST.get('country', '').replace(' ', '')
-        year = request.POST.get('year', '').replace(' ', '')
-        genre = request.POST.get('genre', '').replace(' ', '')
-        duration = request.POST.get('duration', '').replace(' ', '')
-        producer = request.POST.get('producer', '').replace(' ', '')
-        actors = request.POST.get('actors', '').replace(' ', '')
-        video = save_file(request.FILES['video'], 'video')
+        try:
+            name = request.POST.get('name', '').strip()
+            name = ' '.join(name.split()) # несколько пробелов заменяются одним
+            image = save_file(request.FILES['image'], 'image')
+            about = request.POST.get('about', '').replace(' ', '')
+            country = request.POST.get('country', '').replace(' ', '')
+            year = request.POST.get('year', '').replace(' ', '')
+            genre = request.POST.get('genre', '').replace(' ', '')
+            duration = request.POST.get('duration', '').replace(' ', '')
+            producer = request.POST.get('producer', '').replace(' ', '')
+            actors = request.POST.get('actors', '').replace(' ', '')
+            video = save_file(request.FILES['video'], 'video')
+        except:
+            return render(request, 'html/Error.html', {'error': 'Неверный ввод!'})
 
         if 'id' in request.session:
             user_id = request.session.get('id')

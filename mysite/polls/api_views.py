@@ -87,7 +87,7 @@ def logout(request):
         pass
     return HttpResponse(json.dumps({'Success': 'Logout completed successfully'}), content_type = 'application/json')
 
-# TODO: json
+# TODO: // json
 def films(request, page_number):
     if request.method == 'GET':
         value = ' '.join(request.GET.get('value', '').strip().split())
@@ -100,19 +100,24 @@ def films(request, page_number):
 
         if int(page_number) >= 1 and int(page_number) <= math.ceil(len(films) / count_films_on_page):
             current_page = Paginator(films, count_films_on_page)
-            return HttpResponse(json.dumps(films), content_type = 'application/json')
-            #return HttpResponse(json.dumps(current_page.page(page_number)), content_type = 'application/json')
+
+            for film in films:
+                print(film.__dict__['_data'].pop('id'))
+
+            json.dumps([film.__dict__['_data'] for film in films])
+            return HttpResponse(json.dumps([film.__dict__ for film in films]), content_type = 'application/json')
         else:
             return HttpResponse(json.dumps({'Error': '404 Not Found!'}), content_type = 'application/json')
     else:
         return HttpResponse(json.dumps({'Error': '405 Method Not Allowed!'}), content_type = 'application/json')
 
-# TODO: json
+# TODO: // json
 def filminfo(request, name):
     if request.method == 'GET':
         try:
             film = Film.objects.get(name = name)
-            return HttpResponse(json.dumps(film), content_type = 'application/json')
+            print(film.__dict__['_data'].pop('id'))
+            return HttpResponse(json.dumps(film.__dict__['_data']), content_type = 'application/json')
         except:
             return HttpResponse(json.dumps({'Error': '404 Not Found!'}), content_type = 'application/json')
     else:
@@ -204,23 +209,32 @@ def myfilms(request, page_number):
         count_films_on_page = 4
 
         if 'id' in request.session:
-            try:
-                user_id = request.session.get('id')
-                user = User.objects.get(id = user_id)
+            #try:
+            user_id = request.session.get('id')
+            user = User.objects.get(id = user_id)
 
-                if not value:
-                    films = user.films
-                else:
-                    films = list(filter(lambda film: film['film'].name == value, user.films))
+            if not value:
+                films = user.films
+            else:
+                films = list(filter(lambda film: film['film'].name == value, user.films))
 
-                if int(page_number) >= 1 and int(page_number) <= math.ceil(len(films) / count_films_on_page):
-                    current_page = Paginator(films, count_films_on_page)
-                    return HttpResponse(json.dumps(films), content_type = 'application/json')
-                    #return HttpResponse(json.dumps(current_page.page(page_number)), content_type = 'application/json')
-                else:
-                    return HttpResponse(json.dumps({'Error': '404 Not Found!'}), content_type = 'application/json')
-            except:
+            if int(page_number) >= 1 and int(page_number) <= math.ceil(len(films) / count_films_on_page):
+                current_page = Paginator(films, count_films_on_page)
+
+                """print(films)
+                all_films = []
+                for film in films:
+                    red_id = film['film']['_ref'].id
+                    print(red_id)
+                    f = Film.objects.get(id = bson.objectid.ObjectId(red_id))
+                    print(f)
+                    all_films.append(f)
+                print (all_films)"""
+                return HttpResponse(json.dumps({'Error': 'Сейчас это не работает((('}), content_type = 'application/json')
+            else:
                 return HttpResponse(json.dumps({'Error': '404 Not Found!'}), content_type = 'application/json')
+            #except:
+                #return HttpResponse(json.dumps({'Error': '404 Not Found!'}), content_type = 'application/json')
         else:
             return HttpResponse(json.dumps({'Error': '401 Unauthorized!'}), content_type = 'application/json')
     else:
