@@ -34,9 +34,12 @@ def error(request):
 def home(request):
     if request.method == 'GET':
         if 'id' in request.session:
-            return render(request, 'html/home.html', {'registered': True})
+            #user_id = request.session.get('id')
+            #user = User.objects.get(id = user_id)
+            #user.delete()
+            return render(request, 'html/a.html', {'registered': True})
         else:
-            return render(request, 'html/home.html', {'registered': False})
+            return render(request, 'html/a.html', {'registered': False})
     else:
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
@@ -120,7 +123,7 @@ def films(request, page_number):
 
         if int(page_number) >= 1 and int(page_number) <= math.ceil(len(films) / count_films_on_page):
             current_page = Paginator(films, count_films_on_page)
-            return render(request, 'html/films.html', {'films': current_page.page(page_number), 'ismyfilms': False})
+            return render(request, 'html/b.html', {'films': current_page.page(page_number), 'ismyfilms': False})
         else:
             return render(request, 'html/Error.html', {'error': '404 Not Found!'})
     else:
@@ -136,27 +139,75 @@ def filminfo(request, name):
     else:
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
-# TODO:
+
+# demo
+def delmyfilms(request):
+    if request.method == 'GET':
+        if 'id' in request.session:
+            try:
+                user_id = request.session.get('id')
+                user = User.objects.get(id = user_id)
+                user.update(set__films = [])
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER','/'))
+            except:
+                return render(request, 'html/Error.html', {'error': '404 Not Found!'})
+        else:
+            return render(request, 'html/Error.html', {'error': '401 Unauthorized!'})
+    else:
+        return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
+# demo
+def delete(request, name):
+    if request.method == 'GET':
+        if name:
+            if 'id' in request.session:
+                try:
+                    user_id = request.session.get('id')
+                    user = User.objects.get(id = user_id)
+                    film = Film.objects.get(name = name)
+
+                    for f in user.films:
+                        if film == f['film']:
+                            user.update(pull__films = f)
+                            break
+
+                    return render(request, 'html/home.html', {'registered': True})
+                except:
+                    return render(request, 'html/Error.html', {'error': '404 Not Found!'})
+            else:
+                return render(request, 'html/Error.html', {'error': '401 Unauthorized!'})
+        else:
+            return render(request, 'html/Error.html', {'error': '400 Bad Request!'})
+    else:
+        return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
+# admin
+def d(request, name):
+    film = Film.objects.get(name = name)
+    film.delete()
+    print('#'*50)
+    return render(request, 'html/b.html', {'registered': True})
+
+# должен работать!!! не всегда работает !!!
 def rating(request): # переделать
     if request.method == 'POST':
         name = ' '.join(request.POST.get('name', '').strip().split())
         grade = request.POST.get('grade', '').replace(' ', '')
 
-        #film = Film.objects.get(name = name)
-
-        #user = User.objects.get(films = film)
-        #user.update(add_to_set__films = {'grade': 12})
-
-        if name and grade:
+        if name and grade and grade.isdigit():
             if 'id' in request.session:
                 try:
                     user_id = request.session.get('id')
                     user = User.objects.get(id = user_id)
+                    film = Film.objects.get(name = name)
 
-                    #user.update(set__films__grade = grade)
+                    for f in user.films:
+                        if film == f['film']:
+                            updated = dict(date = f['date'], film = f['film'], grade = grade)
+                            user.update(pull__films = f)
+                            user = User.objects.get(id = user_id)
+                            user.update(add_to_set__films = updated)
+                            break
 
-                    #Film.objects(name = name).update(set__film = grade) # изменить бд, проверки
-                    return redirect('/filminfo/' + name)
+                    return render(request, 'html/home.html', {'registered': True})
                 except:
                     return render(request, 'html/Error.html', {'error': '404 Not Found!'})
             else:
@@ -166,7 +217,7 @@ def rating(request): # переделать
     else:
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
-# должен работать!!! проверить на уникальность
+# должен работать!!!
 def add(request):
     if request.method == 'POST':
         name = ' '.join(request.POST.get('name', '').strip().split())
@@ -177,7 +228,12 @@ def add(request):
                     user_id = request.session.get('id')
                     user = User.objects.get(id = user_id)
                     film = Film.objects.get(name = name)
-                    myfilm = {'film': film, 'grade': 0, 'date': datetime.datetime.now()}
+
+                    for f in user.films:
+                        if film == f['film']:
+                            return render(request, 'html/Error.html', {'error': 'Фильм уже был добавлен!'})
+
+                    myfilm = {'film': film, 'grade': '0', 'date': datetime.datetime.now()}
                     user.update(add_to_set__films = myfilm)
                     return HttpResponseRedirect(request.META.get('HTTP_REFERER','/'))
                 except:
@@ -189,22 +245,27 @@ def add(request):
     else:
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
-# TODO:
+# должен работать!!! int(grade) ???
 def sort(request):
     if request.method == 'GET':
         value = ' '.join(request.GET.get('value', '').strip().split())
+
+        #films = user.films[0]['film']
+        #films.sort(key = lambda x: x.year)
 
         if value:
             if 'id' in request.session:
                 try:
                     user_id = request.session.get('id')
                     user = User.objects.get(id = user_id)
+                    films = user.films
 
-                    #people = User.objects.order_by('-grade')    # поправить
-                    #for p in people:
-                        #print(p.name + '   ' + p.mail)
+                    if value == 'grade' or value == 'date':
+                        films.sort(key = lambda x: x[value], reverse = True)
+                    else:
+                        return render(request, 'html/Error.html', {'error': 'Not Value!'})
 
-                    return render(request, 'html/Error.html', {'error': 'Ок!'}) # изменить страницу
+                    return render(request, 'html/sortedfilms.html', {'films': films}) # изменить страницу
                 except:
                     return render(request, 'html/Error.html', {'error': '404 Not Found!'})
             else:
@@ -214,7 +275,7 @@ def sort(request):
     else:
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
-# должен работать!!!
+# должен работать!!! изменить html при переходе по страницам (Paginator)
 def myfilms(request, page_number):
     if request.method == 'GET':
         value = ' '.join(request.GET.get('value', '').strip().split())
@@ -228,8 +289,6 @@ def myfilms(request, page_number):
             if not value:
                 films = user.films
             else:
-                for film in user.films:
-                    print(film['film'].name)
                 films = list(filter(lambda film: film['film'].name == value, user.films))
 
             if int(page_number) >= 1 and int(page_number) <= math.ceil(len(films) / count_films_on_page):
@@ -262,13 +321,18 @@ def addfilm(request):
             name = request.POST.get('name', '').strip()
             name = ' '.join(name.split()) # несколько пробелов заменяются одним
             image = save_file(request.FILES['image'], 'image')
-            about = request.POST.get('about', '').replace(' ', '')
-            country = request.POST.get('country', '').replace(' ', '')
+            about = request.POST.get('about', '').strip()
+            about = ' '.join(about.split()) # несколько пробелов заменяются одним
+            country = request.POST.get('country', '').strip()
+            country = ' '.join(country.split()) # несколько пробелов заменяются одним
             year = request.POST.get('year', '').replace(' ', '')
-            genre = request.POST.get('genre', '').replace(' ', '')
+            genre = request.POST.get('genre', '').strip()
+            genre = ' '.join(genre.split()) # несколько пробелов заменяются одним
             duration = request.POST.get('duration', '').replace(' ', '')
-            producer = request.POST.get('producer', '').replace(' ', '')
-            actors = request.POST.get('actors', '').replace(' ', '')
+            producer = request.POST.get('producer', '').strip()
+            producer = ' '.join(producer.split()) # несколько пробелов заменяются одним
+            actors = request.POST.get('actors', '').strip()
+            actors = ' '.join(actors.split()) # несколько пробелов заменяются одним
             video = save_file(request.FILES['video'], 'video')
         except:
             return render(request, 'html/Error.html', {'error': 'Неверный ввод!'})
@@ -280,6 +344,11 @@ def addfilm(request):
             if user.role == 'admin':
                 if name and image and about and country and year and genre and duration and producer and actors and video:
                     try:
+                        film = Film.objects.filter(name__icontains = name)
+
+                        if len(film):
+                            return render(request, 'html/Error.html', {'error': 'Фильм уже был добавлен!'})
+
                         film = Film.objects.create(
                             name = name,
                             image = image,

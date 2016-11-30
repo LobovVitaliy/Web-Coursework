@@ -1,0 +1,46 @@
+{% extends 'html/layout.html' %}
+
+{% block body %}
+
+  <h1>Все фильмы</h1>
+  <hr>
+  <div class="row">
+    {% for film in films %}
+      <div class="col-xs-6 col-md-3 films">
+        <div class="film-img">
+          <a href="/filminfo/{{film.name}}"><img src="/polls/static/media/{{film.image}}" width="150" /></a>
+        </div>
+        <div class="film-name">
+          <a href="/filminfo/{{film.name}}">{{film.name}}</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="row outer">
+    <ul class="pagination inner">
+      {% if films.has_previous %}
+        <!-- myfilms -->
+        <li class="arrow"><a href="/films/page/{{ films.previous_page_number }}">&laquo;</a></li>
+      {% else %}
+        <li class="arrow unavailable"><a>&laquo;</a></li>
+      {% endif %}
+      {% for page in films.paginator.page_range %}
+        {% if page == films.number %}
+          <!-- myfilms -->
+          <li class="current"><a href="/films/page/{{ page }}">{{ page }}</a></li>
+        {% else %}
+          <!-- myfilms -->
+          <li><a href="/films/page/{{ page }}">{{ page }}</a></li>
+        {% endif %}
+      {% endfor %}
+      {% if films.has_next %}
+        <!-- myfilms -->
+        <li class="arrow"><a href="/films/page/{{ films.next_page_number }}">&raquo;</a></li>
+      {% else %}
+        <li class="arrow unavailable"><a>&raquo;</a></li>
+      {% endif %}
+    </ul>
+  </div>
+
+{% endblock %}

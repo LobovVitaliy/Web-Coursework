@@ -14,5 +14,12 @@
 		<video name='{{film.name}}' controls autoplay poster="" width='50%' height='40%'>
 			<source src="/polls/static/media/{{film.video}}" type="video/mp4"></source>
 		</video>
+		<form action="/rating" method="post">
+			<input type="hidden" name="name" value="{{film.name}}">
+			<input type="range" name="grade" min="0" max="10" step="1" value="10">
+			<input type="submit" name="submit" value="Рейтинг">
+		</form>
+		<br><br>
+		<a href="/delete/{{film.name}}">Удалить</a>
 	</body>
 </html>

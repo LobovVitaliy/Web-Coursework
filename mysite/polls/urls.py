@@ -12,13 +12,20 @@ urlpatterns = [
     url(r'^films/page/(\d+)$', views.films, name = 'films'),
     url(r'^filminfo/([\w ]+)$', views.filminfo, name = 'filminfo'),
 
-    #url(r'^rating$', views.rating, name = 'rating'),
+    url(r'^rating$', views.rating, name = 'rating'),
     url(r'^add$', views.add, name = 'add'),
-    #url(r'^sort$', views.sort, name = 'sort'),
+    url(r'^sort$', views.sort, name = 'sort'),
 
     url(r'^myfilms/page/(\d+)$', views.myfilms, name = 'myfilms'),
 
     url(r'^addfilm$', views.addfilm, name = 'addfilm'),
+
+    # demo
+    url(r'^delmyfilms$', views.delmyfilms, name = 'delmyfilms'),
+    # demo
+    url(r'^delete/([\w ]+)$', views.delete, name = 'delete'),
+    # admin
+    url(r'^d/([\w ]+)$', views.d, name = 'd'),
 
     url(r'^', views.error, name = "error")
 ]
