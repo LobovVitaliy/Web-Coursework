@@ -1,51 +1,168 @@
+/* ################### Body ################### */
 body {
-	background: #1a1a1a;
-	font-family: Poppins, sans-serif;
-	color: #fff;
-	margin: 0px;
+	background: #1a1a1a !important;
+	color: #fff !important;
 	-webkit-user-select: none;
 }
+/* ################### Body ################### */
 
-#header {
-	position: relative;
-	background: #0971f2;
-	border-bottom: 1px solid #353535;
-	height: 100px;
-	text-align: center;
+/* ################### Nav ################### */
+nav {
+	background-color: #303030;
+}
+nav a {
+  color: #32CD32 !important;
+  font-weight: bold;
+  font-size: 20px;
+}
+/* ################### Nav ################### */
+
+
+
+.border {
+	border: 2px solid #0971f2;
 }
 
-#name {
-	position: absolute;
-	font-size: 50px;
+.border-l {
+	border-left: 2px solid #0971f2;
+}
+
+.border-r {
+	border-right: 2px solid #0971f2;
+}
+
+.brand {
+	color: yellow !important;
+}
+
+.bt {
+	height: 50px;
+	width: 100px;
+	background: #0c9c0d linear-gradient(#82d18d, #0c9c0d);
+	border: 0;
 	font-weight: bold;
-	color: #f3f0db;
-	width: 100%;
-	text-shadow: 1px 1px 20px black, 0 0 1em red;
-	margin-top: 20px;
+	font-size: 150%;
+}
+
+.r {
+	width: 250px !important; /* 612* */
+}
+
+.xx {
+	height: 40px !important;
+	margin-top: 5px;
+}
+
+input[type="text"] {
+  background-color: #FFFAFA;
+}
+
+.input2::-webkit-input-placeholder       {text-indent: 0px;   transition: text-indent 0.3s ease;}
+.input2::-moz-placeholder                {text-indent: 0px;   transition: text-indent 0.3s ease;}
+.input2:-moz-placeholder                 {text-indent: 0px;   transition: text-indent 0.3s ease;}
+.input2:-ms-input-placeholder            {text-indent: 0px;   transition: text-indent 0.3s ease;}
+.input2:focus::-webkit-input-placeholder {text-indent: 500px; transition: text-indent 0.3s ease;}
+.input2:focus::-moz-placeholder          {text-indent: 500px; transition: text-indent 0.3s ease;}
+.input2:focus:-moz-placeholder           {text-indent: 500px; transition: text-indent 0.3s ease;}
+.input2:focus:-ms-input-placeholder      {text-indent: 500px; transition: text-indent 0.3s ease;}
+
+.progress-bar {
+	background-color: #1a1a1a;
+	height: 25px;
+	padding: 5px;
+	width: 350px;
+	margin: 50px 0;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	-moz-box-shadow: 0 1px 5px #000 inset, 0 1px 0 #444;
+	-webkit-box-shadow: 0 1px 5px #000 inset, 0 1px 0 #444;
+	box-shadow: 0 1px 5px #000 inset, 0 1px 0 #444;
+}
+
+.progress-bar span {
+	display: inline-block;
+	height: 25px;
+	width: 200px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+	-moz-box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset;
+	-webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset;
+	box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset;
+	-webkit-transition: width .4s ease-in-out;
+	-moz-transition: width .4s ease-in-out;
+	-ms-transition: width .4s ease-in-out;
+	-o-transition: width .4s ease-in-out;
+	transition: width .4s ease-in-out;
 }
 
 
-#footer {
-	position: relative;
+
+/* ################### Main ################### */
+article {
+	margin-top: 100px;
+	margin-left: 10vw;
+	min-height: 68.5vh;
+	width: 80vw;
+}
+/* ################### Main ################### */
+
+/* ################### Films ################### */
+.films {
+	margin-top: 30px;
+}
+.film-img {
+	height: 225px;
+	width: 150px;
+	margin: 0 auto;
+}
+.film-img a:hover {
+	opacity: 0.3;
+}
+.film-img img {
+	border-radius: 2px;
+}
+.film-name {
+	height: 50px;
+	width: 150px;
+	margin: 0 auto;
+	text-align: center;
+	margin-top: 10px;
+}
+.film-name a:hover {
+	text-decoration: none !important;
+	color: #FAF0E6 !important;
+}
+/* ################### Films ################### */
+.outer {
+  text-align: center;
+}
+.inner {
+  display: inline-block;
+  vertical-align: middle;
+}
+.pagination li a {
+  color: #4B0082 !important;
+}
+/* ################### Films ################### */
+
+
+/* ################### Footer ################### */
+footer {
 	background: #0d0d0d;
 	border-top: 1px solid #353535;
 	color: #888;
 	height: 100px;
 	text-align: center;
 }
-
 #footer-copyright {
-	position: relative;
-	width: 100%;
 	margin-top: 40px;
 }
-
-#footer a {
+footer a {
 	color: #D2B48C;
-	text-decoration: none;
 }
-
-#footer a:hover {
+footer a:hover {
 	color: #98FB98;
-	text-decoration: underline;
 }
+/* ################### Footer ################### */

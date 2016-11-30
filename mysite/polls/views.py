@@ -6,6 +6,8 @@ from django.conf import settings
 from polls.models import User, Film
 import math, hashlib, datetime, os
 
+count_films_on_page = 2
+
 def make_password(password):
     salt = '&e2g$jR-%/frwR0()2>d#'
     hash = hashlib.md5(bytes(password + salt, encoding = 'utf-8')).hexdigest()
@@ -37,7 +39,7 @@ def home(request):
             #user_id = request.session.get('id')
             #user = User.objects.get(id = user_id)
             #user.delete()
-            return render(request, 'html/a.html', {'registered': True})
+            return render(request, 'html/home.html', {'registered': True})
         else:
             return render(request, 'html/a.html', {'registered': False})
     else:
@@ -95,7 +97,7 @@ def login(request):
     else:
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
-#new
+# DONE
 def logout(request):
     try:
         del request.session['id']
@@ -111,19 +113,27 @@ def restore(request):
     else:
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
+# DONE (переписать ошибки)
 def films(request, page_number):
     if request.method == 'GET':
         value = ' '.join(request.GET.get('value', '').strip().split())
-        count_films_on_page = 4
 
         if not value:
             films = Film.objects.all()
+            args = {'search': ''}
         else:
             films = Film.objects.filter(name__icontains = value)
+            args = {'search': value}
 
         if int(page_number) >= 1 and int(page_number) <= math.ceil(len(films) / count_films_on_page):
             current_page = Paginator(films, count_films_on_page)
-            return render(request, 'html/b.html', {'films': current_page.page(page_number), 'ismyfilms': False})
+
+            if 'id' in request.session:
+                args.update({'films': current_page.page(page_number), 'registered': True, 'ismyfilms': False})
+            else:
+                args.update({'films': current_page.page(page_number), 'registered': False, 'ismyfilms': False})
+
+            return render(request, 'html/films.html', args)
         else:
             return render(request, 'html/Error.html', {'error': '404 Not Found!'})
     else:
@@ -184,7 +194,7 @@ def d(request, name):
     film = Film.objects.get(name = name)
     film.delete()
     print('#'*50)
-    return render(request, 'html/b.html', {'registered': True})
+    return render(request, 'html/films.html', {'registered': True})
 
 # должен работать!!! не всегда работает !!!
 def rating(request): # переделать
@@ -275,29 +285,31 @@ def sort(request):
     else:
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
-# должен работать!!! изменить html при переходе по страницам (Paginator)
+# DONE (переписать ошибки)
 def myfilms(request, page_number):
     if request.method == 'GET':
         value = ' '.join(request.GET.get('value', '').strip().split())
-        count_films_on_page = 4
 
         if 'id' in request.session:
-            #try:
-            user_id = request.session.get('id')
-            user = User.objects.get(id = user_id)
+            try:
+                user_id = request.session.get('id')
+                user = User.objects.get(id = user_id)
 
-            if not value:
-                films = user.films
-            else:
-                films = list(filter(lambda film: film['film'].name == value, user.films))
+                if not value:
+                    films = user.films
+                    args = {'search': ''}
+                else:
+                    films = list(filter(lambda film: film['film'].name.lower().find(value.lower()) != -1, user.films))
+                    args = {'search': value}
 
-            if int(page_number) >= 1 and int(page_number) <= math.ceil(len(films) / count_films_on_page):
-                current_page = Paginator(films, count_films_on_page)
-                return render(request, 'html/films.html', {'films': current_page.page(page_number), 'ismyfilms': True})
-            else:
+                if int(page_number) >= 1 and int(page_number) <= math.ceil(len(films) / count_films_on_page):
+                    current_page = Paginator(films, count_films_on_page)
+                    args.update({'films': current_page.page(page_number), 'registered': True, 'ismyfilms': True})
+                    return render(request, 'html/films.html', args)
+                else:
+                    return render(request, 'html/Error.html', {'error': '404 Not Found!'})
+            except:
                 return render(request, 'html/Error.html', {'error': '404 Not Found!'})
-            #except:
-                #return render(request, 'html/Error.html', {'error': '404 Not Found!'})
         else:
             return render(request, 'html/Error.html', {'error': '401 Unauthorized!'})
     else:

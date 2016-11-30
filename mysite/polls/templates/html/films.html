@@ -1,67 +1,99 @@
-<!DOCTYPE html>
+{% extends 'html/layout.html' %}
 
-{% load staticfiles %}
+{% block body %}
 
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<title>Course Work</title>
-		<link rel="shortcut icon" href="/static/img/icon.png">
+  <h1>Все фильмы</h1>
+  <hr>
+  <div class="row">
+      {% for film in films %}
+          <div class="col-xs-6 col-md-3 films">
+              <div class="film-img">
+                  {% if ismyfilms %}
+                      <a href="/filminfo/{{film.film.name}}"><img src="/polls/static/media/{{film.film.image}}" width="150" /></a>
+                  {% else %}
+                      <a href="/filminfo/{{film.name}}"><img src="/polls/static/media/{{film.image}}" width="150" /></a>
+                  {% endif %}
+              </div>
+              <div class="film-name">
+                  {% if ismyfilms %}
+                      <a href="/filminfo/{{film.film.name}}">{{film.film.name}}</a>
+                  {% else %}
+                      <a href="/filminfo/{{film.name}}">{{film.name}}</a>
+                  {% endif %}
+              </div>
+          </div>
+      {% endfor %}
+  </div>
+  <div class="row outer">
+      <ul class="pagination inner">
+          {% if films.has_previous %}
+              {% if ismyfilms %}
+                  {% if search %}
+                      <li class="arrow"><a href="/myfilms/page/{{films.previous_page_number}}?value={{search}}">&laquo;</a></li>
+                  {% else %}
+                      <li class="arrow"><a href="/myfilms/page/{{films.previous_page_number}}">&laquo;</a></li>
+                  {% endif %}
+              {% else %}
+                  {% if search %}
+                      <li class="arrow"><a href="/films/page/{{films.previous_page_number}}?value={{search}}">&laquo;</a></li>
+                  {% else %}
+                      <li class="arrow"><a href="/films/page/{{films.previous_page_number}}">&laquo;</a></li>
+                  {% endif %}
+              {% endif %}
+          {% else %}
+              <li class="arrow unavailable"><a>&laquo;</a></li>
+          {% endif %}
 
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+          {% for page in films.paginator.page_range %}
+              {% if page == films.number %}
+                  {% if ismyfilms %}
+                      {% if search %}
+                          <li class="current"><a href="/myfilms/page/{{page}}?value={{search}}">{{page}}</a></li>
+                      {% else %}
+                          <li class="current"><a href="/myfilms/page/{{page}}">{{page}}</a></li>
+                      {% endif %}
+                  {% else %}
+                      {% if search %}
+                          <li class="current"><a href="/films/page/{{page}}?value={{search}}">{{page}}</a></li>
+                      {% else %}
+                          <li class="current"><a href="/films/page/{{page}}">{{page}}</a></li>
+                      {% endif %}
+                  {% endif %}
+              {% else %}
+                  {% if ismyfilms %}
+                      {% if search %}
+                          <li><a href="/myfilms/page/{{page}}?value={{search}}">{{page}}</a></li>
+                      {% else %}
+                          <li><a href="/myfilms/page/{{page}}">{{page}}</a></li>
+                      {% endif %}
+                  {% else %}
+                      {% if search %}
+                          <li><a href="/films/page/{{page}}?value={{search}}">{{page}}</a></li>
+                      {% else %}
+                          <li><a href="/films/page/{{page}}">{{page}}</a></li>
+                      {% endif %}
+                  {% endif %}
+              {% endif %}
+          {% endfor %}
 
-    <script src="//code.jquery.com/jquery-3.1.1.min.js"></script>
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-	</head>
+          {% if films.has_next %}
+              {% if ismyfilms %}
+                  {% if search %}
+                      <li class="arrow"><a href="/myfilms/page/{{films.next_page_number}}?value={{search}}">&raquo;</a></li>
+                  {% else %}
+                      <li class="arrow"><a href="/myfilms/page/{{films.next_page_number}}">&raquo;</a></li>
+                  {% endif %}
+              {% else %}
+                  {% if search %}
+                      <li class="arrow"><a href="/films/page/{{films.next_page_number}}?value={{search}}">&raquo;</a></li>
+                  {% else %}
+                      <li class="arrow"><a href="/films/page/{{films.next_page_number}}">&raquo;</a></li>
+                  {% endif %}
+              {% endif %}
+          {% else %}
+              <li class="arrow unavailable"><a>&raquo;</a></li>
+          {% endif %}
+      </ul>
+  </div>
 
-	<body>
-		<a href="/">Вернуться на главную</a>
-		<hr>
-    <h1>Films</h1>
-
-		{% if not ismyfilms %}
-			{% for film in films %}
-				Name: <a href="/filminfo/{{film.name}}">{{film.name}}</a><br>
-				<img src="/polls/static/media/{{film.image}}" width="150" /><br>
-			{% endfor %}
-		{% else %}
-			{% for film in films %}
-				Name: <a href="/filminfo/{{film.film.name}}">{{film.film.name}}</a><br>
-				Grade: {{film.grade}}<br>
-				<img src="/polls/static/media/{{film.film.image}}" width="150" /><br>
-			{% endfor %}
-
-			Поиск:
-			<form action="/myfilms/page/1" method="GET">
-				<input type="text" name="value" value="">
-				<input type="submit" name="submit" value="Поиск">
-			</form>
-		{% endif %}
-
-    <div class="row">
-        <div class="large-3 large-offset-5 columns">
-            <ul class="pagination">
-                {% if films.has_previous %}
-                    <li class="arrow"><a href="/films/page/{{ films.previous_page_number }}">&laquo;</a></li>
-                {% else %}
-                    <li class="arrow unavailable"><a href="">&laquo;</a></li>
-                {% endif %}
-                {% for page in films.paginator.page_range %}
-                    {% if page == films.number %}
-                        <li class="current"><a href="/films/page/{{ page }}">{{ page }}</a></li>
-                    {% else %}
-                        <li><a href="/films/page/{{ page }}">{{ page }}</a></li>
-                    {% endif %}
-                {% endfor %}
-                {% if films.has_next %}
-                    <li class="arrow"><a href="/films/page/{{ films.next_page_number }}">&raquo;</a></li>
-                {% else %}
-                    <li class="arrow unavailable"><a href="">&raquo;</a></li>
-                {% endif %}
-            </ul>
-        </div>
-    </div>
-
-	</body>
-</html>
+{% endblock %}
