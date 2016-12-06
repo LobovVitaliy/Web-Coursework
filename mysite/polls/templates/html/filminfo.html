@@ -1,25 +1,117 @@
-<!DOCTYPE html>
+{% extends 'html/layout.html' %}
 
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<title>Course Work</title>
-		<link rel="shortcut icon" href="/static/img/icon.png">
-	</head>
+{% block body %}
 
-	<body>
-		<a href="/">Вернуться на главную</a>
-		<hr>
-    <h1>Film info: {{film.name}}</h1><br>
-		<video name='{{film.name}}' controls autoplay poster="" width='50%' height='40%'>
-			<source src="/polls/static/media/{{film.video}}" type="video/mp4"></source>
-		</video>
-		<form action="/rating" method="post">
-			<input type="hidden" name="name" value="{{film.name}}">
-			<input type="range" name="grade" min="0" max="10" step="1" value="10">
-			<input type="submit" name="submit" value="Рейтинг">
-		</form>
-		<br><br>
-		<a href="/delete/{{film.name}}">Удалить</a>
-	</body>
-</html>
+{% if ismyfilms %}
+    <h1 class="heading-name">{{film.film.name}}</h1>
+{% else %}
+    <h1 class="heading-name">{{film.name}}</h1>
+{% endif %}
+
+{% if ismyfilms %}
+    <form class="f-right" action="/delete" method="POST">
+        <input type="text" name="name" value="{{film.film.name}}" hidden>
+        <input type="submit" class="bt bt-add-del bt-red" name="submit" value="Удалить">
+    </form>
+{% else %}
+    <form class="f-right" action="/add" method="POST">
+        <input type="text" name="name" value="{{film.name}}" hidden>
+        <input type="submit" class="bt bt-add-del bt-green" name="submit" value="Добавить">
+    </form>
+{% endif %}
+
+<hr>
+<div class="row">
+    <div class="col-xs-12 col-md-4" >
+        {% if ismyfilms %}
+            <img src="/polls/static/media/{{film.film.image}}" width="272"/><br>
+        {% else %}
+            <img src="/polls/static/media/{{film.image}}" width="272"/><br>
+        {% endif %}
+    </div>
+    <div class="col-xs-12 col-md-8">
+        <video controls poster="" width='100%'>
+            {% if ismyfilms %}
+                <source src="/polls/static/media/{{film.film.video}}" type="video/mp4"></source>
+            {% else %}
+                <source src="/polls/static/media/{{film.video}}" type="video/mp4"></source>
+            {% endif %}
+        </video>
+    </div>
+</div>
+<hr>
+<div class="row">
+    <div class="col-xs-12 col-md-4">
+        <table>
+            <tr>
+                <td class="key">Страна:</td>
+                {% if ismyfilms %}
+                    <td>{{film.film.country}}</td>
+                {% else %}
+                    <td>{{film.country}}</td>
+                {% endif %}
+            </tr>
+            <tr>
+                <td class="key">Год:</td>
+                {% if ismyfilms %}
+                    <td>{{film.film.year}}</td>
+                {% else %}
+                    <td>{{film.year}}</td>
+                {% endif %}
+            </tr>
+            <tr>
+                <td class="key">Жанр:</td>
+                {% if ismyfilms %}
+                    <td>{{film.film.genre}}</td>
+                {% else %}
+                    <td>{{film.genre}}</td>
+                {% endif %}
+            </tr>
+            <tr>
+                <td class="key">Время:</td>
+                {% if ismyfilms %}
+                    <td>{{film.film.duration}}</td>
+                {% else %}
+                    <td>{{film.duration}}</td>
+                {% endif %}
+            </tr>
+            <tr>
+                <td class="key">Продюсер:</td>
+                {% if ismyfilms %}
+                    <td>{{film.film.producer}}</td>
+                {% else %}
+                    <td>{{film.producer}}</td>
+                {% endif %}
+            </tr>
+            <tr>
+                <td class="key">Актеры:</td>
+                {% if ismyfilms %}
+                    <td>{{film.film.actors}}</td>
+                {% else %}
+                    <td>{{film.actors}}</td>
+                {% endif %}
+            </tr>
+            {% if ismyfilms %}
+                <tr>
+                    <td class="key">Добавлено:</td>
+                    <td>{{film.date}}</td>
+                </tr>
+                <tr>
+                    <td class="key">Рейтинг:</td>
+                    <td>{{film.grade}}</td>
+                </tr>
+            {% endif %}
+        </table>
+    </div>
+    <div class="col-xs-12 col-md-8">
+        <label>Сюжет</label>
+        {% if ismyfilms %}
+            <p>{{film.film.about}}</p>
+        {% else %}
+            <p>{{film.about}}</p>
+        {% endif %}
+    </div>
+</div>
+<br>
+
+{% endblock %}

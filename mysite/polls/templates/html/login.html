@@ -1,19 +1,23 @@
-<!DOCTYPE html>
+{% extends 'html/layout.html' %}
 
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<title>Course Work</title>
-	</head>
+{% block body %}
 
-	<body>
-		<a href="/">Вернуться на главную</a>
-		<hr>
-    <h1>Sign in</h1>
-		<form class="" action="/login" method="POST">
-			<input type="text" name="mail" placeholder="mail"><br>
-			<input type="text" name="password" placeholder="пароль"><br>
-			<input type="submit" name="submit">
-		</form>
-	</body>
-</html>
+<div class="row">
+    <div class="col-xs-6 col-md-6">
+        <div class="form-data">
+            <form action="/login" method="post">
+                <div class="field">
+                    <label>Введите Mail</label>
+                    <input type="text" name="mail">
+                </div>
+                <div class="field">
+                    <label>Введите пароль</label>
+                    <input type="password" name="password">
+                </div>
+                <input class="bt bt-long" type="submit" value="Войти">
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,22 +1,31 @@
-<!DOCTYPE html>
+{% extends 'html/layout.html' %}
 
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<title>Course Work</title>
-		<link rel="shortcut icon" href="/static/img/icon.png">
-	</head>
+{% block body %}
 
-	<body>
-		<a href="/">Вернуться на главную</a>
-		<hr>
-    <h1>Sign up</h1>
-		<form action="/signup" method="POST">
-			<input type="text" name="name" placeholder="имя"><br>
-			<input type="text" name="mail" placeholder="mail"><br>
-			<input type="text" name="password_1" placeholder="пароль"><br>
-			<input type="text" name="password_2" placeholder="повторный пароль"><br>
-			<input type="submit" name="submit">
-		</form>
-	</body>
-</html>
+<div class="row">
+    <div class="col-xs-6 col-md-6">
+        <div class="form-data">
+            <form action="/signup" method="post">
+                <div class="field">
+                    <label>Введите имя</label>
+                    <input type="text" name="name">
+                </div>
+                <div class="field">
+                    <label>Введите Mail</label>
+                    <input type="text" name="mail">
+                </div>
+                <div class="field">
+                    <label>Введите пароль</label>
+                    <input type="password" name="password_1">
+                </div>
+                <div class="field">
+                    <label>Введите пароль (еще раз)</label>
+                    <input type="password" name="password_2">
+                </div>
+                <input class="bt bt-long" type="submit" value="Зарегистрироваться">
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

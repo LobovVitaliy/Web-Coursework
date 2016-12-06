@@ -23,7 +23,7 @@
 						      	<a class="navbar-brand brand border-r" href="/">Movie</a>
 						    </div>
 						    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-							      <ul class="nav navbar-nav">
+										<ul class="nav navbar-nav">
 								        <!-- <li class="border-r"><a href="/">Главная</a></li> -->
 								        <li class="border-r"><a href="/films/page/1">Фильмы</a></li>
 												<!-- <li class="border-r"><a href="#">Топ</a></li> -->
@@ -40,25 +40,153 @@
 										</div>
 							      <ul class="nav navbar-nav navbar-right">
 					              {% if not registered %}
-							              <form action="/login" method="get">
-							                	<li class="border-l"><input class="bt" type="submit" value="Войти"></li>
-							              </form>
+														<li class="border-l"><a class="bt width-login" href="/login">Войти</a></li>
 					              {% else %}
-							              <form action="/logout" method="get">
-							                	<li class="border-l"><input class="bt" type="submit" value="Выйти"></li>
-							              </form>
-					          		{% endif %}
+														<!-- <li class="border-l"><a class="bt width-logout" href="/logout">Выйти</a></li> -->
+														<li class="border-l dropdown">
+														    <a href="#" data-toggle="dropdown" class="bt dropdown-toggle">
+														      	Name
+														      	<b class="caret"></b>
+														    </a>
+														    <ul class="dropdown-menu">
+																		<li><a href="#">Профиль</a></li>
+														      	<li><a href="/myfilms/page/1">Мои фильмы</a></li>
+																		<li><a href="#">Сортировать</a></li>
+																		<li><a href="#">Поиск</a></li>
+														      	<li class="divider"></li>
+														      	<li><a href="/logout">Выйти</a></li>
+														    </ul>
+													  </li>
+												{% endif %}
 							      </ul>
 										<ul class="nav navbar-nav navbar-right">
 					              {% if not registered %}
-														<form action="/signup" method="get">
-																<li class="border-l"><input class="bt r" type="submit" value="Регистрация"></li>
-							              </form>
+														<li class="border-l"><a class="bt width-reg" href="/signup">Регистрация</a></li>
 					          		{% endif %}
 				      			</ul>
 								</div>
 				  	</div>
 				</nav>
+
+				<div class="container">
+				    <br><br><br><br>
+				    <div class="row lead">
+				        <div id="hearts" class="starrr"></div>
+				        You gave a rating of <span id="count">0</span> star(s)
+					</div>
+				</div>
+
+				<script type="text/javascript">
+						var __slice = [].slice;
+
+						(function($, window) {
+						  var Starrr;
+
+						  Starrr = (function() {
+						    Starrr.prototype.defaults = {
+						      rating: void 0,
+						      numStars: 10,
+						      change: function(e, value) {}
+						    };
+
+						    function Starrr($el, options) {
+						      var i, _, _ref,
+						        _this = this;
+
+						      this.options = $.extend({}, this.defaults, options);
+						      this.$el = $el;
+						      _ref = this.defaults;
+						      for (i in _ref) {
+						        _ = _ref[i];
+						        if (this.$el.data(i) != null) {
+						          this.options[i] = this.$el.data(i);
+						        }
+						      }
+						      this.createStars();
+						      this.syncRating();
+						      this.$el.on('mouseover.starrr', 'span', function(e) {
+						        return _this.syncRating(_this.$el.find('span').index(e.currentTarget) + 1);
+						      });
+						      this.$el.on('mouseout.starrr', function() {
+						        return _this.syncRating();
+						      });
+						      this.$el.on('click.starrr', 'span', function(e) {
+						        return _this.setRating(_this.$el.find('span').index(e.currentTarget) + 1);
+						      });
+						      this.$el.on('starrr:change', this.options.change);
+						    }
+
+						    Starrr.prototype.createStars = function() {
+						      var _i, _ref, _results;
+
+						      _results = [];
+						      for (_i = 1, _ref = this.options.numStars; 1 <= _ref ? _i <= _ref : _i >= _ref; 1 <= _ref ? _i++ : _i--) {
+						        _results.push(this.$el.append("<span class='glyphicon .glyphicon-star-empty'></span>"));
+						      }
+						      return _results;
+						    };
+
+						    Starrr.prototype.setRating = function(rating) {
+						      this.options.rating = rating;
+						      this.syncRating();
+						      return this.$el.trigger('starrr:change', rating);
+						    };
+
+						    Starrr.prototype.syncRating = function(rating) {
+						      var i, _i, _j, _ref;
+
+						      rating || (rating = this.options.rating);
+						      if (rating) {
+						        for (i = _i = 0, _ref = rating - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+						          this.$el.find('span').eq(i).removeClass('glyphicon-star-empty').addClass('glyphicon-star');
+						        }
+						      }
+						      if (rating && rating < 10) {
+						        for (i = _j = rating; rating <= 9 ? _j <= 9 : _j >= 9; i = rating <= 9 ? ++_j : --_j) {
+						          this.$el.find('span').eq(i).removeClass('glyphicon-star').addClass('glyphicon-star-empty');
+						        }
+						      }
+						      if (!rating) {
+						        return this.$el.find('span').removeClass('glyphicon-star').addClass('glyphicon-star-empty');
+						      }
+						    };
+
+						    return Starrr;
+
+						  })();
+
+						  return $.fn.extend({
+						    starrr: function() {
+						      var args, option;
+
+						      option = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+						      return this.each(function() {
+						        var data;
+
+						        data = $(this).data('star-rating');
+						        if (!data) {
+						          $(this).data('star-rating', (data = new Starrr($(this), option)));
+						        }
+						        if (typeof option === 'string') {
+						          return data[option].apply(data, args);
+						        }
+						      });
+						    }
+						  });
+						})(window.jQuery, window);
+
+						$(function() {
+						  return $(".starrr").starrr();
+						});
+
+						$( document ).ready(function() {
+
+						  $('#hearts').on('starrr:change', function(e, value){
+						    $('#count').html(value);
+						  });
+						});
+				</script>
+
 				<article>
 		      	{% block body %}{% endblock %}
 		    </article>

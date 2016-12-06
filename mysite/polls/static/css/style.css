@@ -4,6 +4,9 @@ body {
 	color: #fff !important;
 	-webkit-user-select: none;
 }
+a {
+	text-decoration: none !important;
+}
 /* ################### Body ################### */
 
 /* ################### Nav ################### */
@@ -17,35 +20,43 @@ nav a {
 }
 /* ################### Nav ################### */
 
-
-
-.border {
-	border: 2px solid #0971f2;
-}
-
-.border-l {
-	border-left: 2px solid #0971f2;
-}
-
-.border-r {
-	border-right: 2px solid #0971f2;
-}
-
-.brand {
-	color: yellow !important;
-}
-
+/* ################### a - button ################### */
 .bt {
+	display: block;
+	border: none;
 	height: 50px;
-	width: 100px;
 	background: #0c9c0d linear-gradient(#82d18d, #0c9c0d);
-	border: 0;
+	color: white !important;
+	text-align: center;
 	font-weight: bold;
 	font-size: 150%;
 }
+.width-login {
+	width: 100px;
+}
+.width-logout {
+	width: 100px;
+}
+.width-reg {
+	width: 250px;
+}
+/* ################### a - button ################### */
 
-.r {
-	width: 250px !important; /* 612* */
+/* ################### Border ################### */
+.border {
+	border: 2px solid #0971f2;
+}
+.border-l {
+	border-left: 2px solid #0971f2;
+}
+.border-r {
+	border-right: 2px solid #0971f2;
+}
+/* ################### Border ################### */
+
+
+.brand {
+	color: yellow !important;
 }
 
 .xx {
@@ -108,6 +119,8 @@ article {
 }
 /* ################### Main ################### */
 
+
+
 /* ################### Films ################### */
 .films {
 	margin-top: 30px;
@@ -120,19 +133,21 @@ article {
 .film-img a:hover {
 	opacity: 0.3;
 }
-.film-img img {
-	border-radius: 2px;
-}
 .film-name {
 	height: 50px;
 	width: 150px;
-	margin: 0 auto;
+	margin: auto;
 	text-align: center;
 	margin-top: 10px;
 }
+.film-name a {
+	color: #4682B4;
+}
+.film-name a:visited {
+	color: 	#4682B4;
+}
 .film-name a:hover {
-	text-decoration: none !important;
-	color: #FAF0E6 !important;
+	color: #FAF0E6;
 }
 /* ################### Films ################### */
 .outer {
@@ -147,6 +162,87 @@ article {
 }
 /* ################### Films ################### */
 
+/* ################### Login, Signup ################### */
+.form-data {
+	width: 300px;
+	margin: 40px auto;
+}
+.field {
+	background: linear-gradient(#fa7f2d, #ff6600, #fa7f2d);
+	padding: 5px;
+	border-radius: 3px;
+	margin-bottom: 25px;
+}
+.field input {
+	border: 1px solid #96450f;
+	width: 290px;
+	padding: 5px;
+	font-size: 20px;
+	font-family: Helvetica Neue;
+	font-weight: 600;
+	box-shadow: 0 1px #fcb483, inset 0 3px 5px #aaa;
+	border-radius: 3px;
+	color: #666564;
+	outline: none;
+}
+.field input:focus {
+	color: #333;
+}
+.bt-long {
+	border-radius: 3px;
+	width: 300px;
+}
+/* ################### Login, Signup ################### */
+
+/* ################### FilmInfo ################### */
+.heading-name {
+	display: inline-block;
+  margin: auto;
+  width: 85%;
+}
+.bt-add-del {
+  height: 39px;
+  border-radius: 2px;
+}
+.bt-green {
+	background: green;
+}
+.bt-red {
+	background: #B22222;
+}
+.f-right {
+  float: right;
+}
+
+img {
+	border-radius: 3px;
+}
+video {
+	background: #778899;
+	padding: 5px;
+	border-radius: 3px;
+}
+
+table {
+	width: 272px;
+	font-weight: bold;
+	word-break: break-word;
+}
+table tr {
+	vertical-align: top;
+}
+table td {
+	padding: 2px;
+}
+.key {
+	 width: 40%;
+}
+
+label {
+	font-size: 20px;
+}
+/* ################### FilmInfo ################### */
+
 
 /* ################### Footer ################### */
 footer {
@@ -160,6 +256,9 @@ footer {
 	margin-top: 40px;
 }
 footer a {
+	color: #D2B48C;
+}
+footer a:visited {
 	color: #D2B48C;
 }
 footer a:hover {
