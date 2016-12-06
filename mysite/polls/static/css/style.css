@@ -14,9 +14,63 @@ nav {
 	background-color: #303030;
 }
 nav a {
-  color: #32CD32 !important;
+  color: #32CD32;
   font-weight: bold;
   font-size: 20px;
+}
+
+.brand {
+	color: yellow !important;
+}
+
+.profile-menu {
+	margin-top: 1.5px !important;
+	margin-right: -2.5px !important;
+	background-color: #DCDCDC !important;
+}
+.profile-menu a {
+	color: black !important;
+}
+
+.dropdown-submenu {
+	position: relative;
+}
+.dropdown-submenu > .dropdown-menu {
+	top: 0;
+	background-color: #DCDCDC;
+	margin-left: 1px;
+}
+.dropdown-submenu:hover > .dropdown-menu {
+	display: block;
+}
+
+.dropdown-submenu > .sort-h {
+	margin-top: -6px;
+	left: -100% !important;
+	border-radius: 5px 0 0 5px;
+}
+.dropdown-submenu:hover > .sort-h {
+	width: 100%;
+}
+
+.dropdown-submenu > .search-h {
+	margin-top: -2px;
+	left: -150% !important;
+	height: 38px;
+}
+.dropdown-submenu:hover > .search-h {
+	width: 150%;
+}
+
+.search-mf {
+	color: black;
+	height: 36px;
+	margin-top: -5px;
+	width: 100%;
+	border-radius: 5px 0 0 5px;
+	padding: 10px;
+	border: none;
+	outline: none;
 }
 /* ################### Nav ################### */
 
@@ -54,18 +108,15 @@ nav a {
 }
 /* ################### Border ################### */
 
-
-.brand {
-	color: yellow !important;
-}
-
 .xx {
 	height: 40px !important;
+	font-size: 18px !important;
 	margin-top: 5px;
 }
 
 input[type="text"] {
-  background-color: #FFFAFA;
+	background-color: #FFFAFA;
+	font-size: 20px;
 }
 
 .input2::-webkit-input-placeholder       {text-indent: 0px;   transition: text-indent 0.3s ease;}
@@ -109,7 +160,6 @@ input[type="text"] {
 }
 
 
-
 /* ################### Main ################### */
 article {
 	margin-top: 100px;
@@ -118,7 +168,6 @@ article {
 	width: 80vw;
 }
 /* ################### Main ################### */
-
 
 
 /* ################### Films ################### */
@@ -130,15 +179,29 @@ article {
 	width: 150px;
 	margin: 0 auto;
 }
-.film-img a:hover {
+.film-img a:hover img {
 	opacity: 0.3;
 }
+.film-img > a span {
+	display: none;
+}
+.film-img > a:hover span {
+	display: block;
+	color: white;
+}
+.ic-play {
+	text-align: center;
+	margin-top: -145px;
+	font-size: 50px;
+}
 .film-name {
-	height: 50px;
 	width: 150px;
 	margin: auto;
 	text-align: center;
 	margin-top: 10px;
+}
+.film-name > .name {
+	margin-top: -15px;
 }
 .film-name a {
 	color: #4682B4;
@@ -149,7 +212,7 @@ article {
 .film-name a:hover {
 	color: #FAF0E6;
 }
-/* ################### Films ################### */
+
 .outer {
   text-align: center;
 }
@@ -223,6 +286,14 @@ video {
 	border-radius: 3px;
 }
 
+.stars {
+	text-align:center;
+	width: 272px;
+}
+#hearts {
+	color: #ee8b2d;
+}
+
 table {
 	width: 272px;
 	font-weight: bold;
@@ -235,7 +306,7 @@ table td {
 	padding: 2px;
 }
 .key {
-	 width: 40%;
+	 width: 50%;
 }
 
 label {

@@ -2,21 +2,54 @@
 
 {% block body %}
 
-<h1>Все фильмы</h1>
+{% if ismyfilms %}
+    <h1>Мои фильмы
+        {% if search %} ( {{search}} )
+        {% elif sorted == "grade" %} ( Отсортировано по оценке )
+        {% elif sorted == "date" %} ( Отсортировано по дате )
+        {% endif %}
+    </h1>
+{% else %}
+    <h1>Все фильмы
+        {% if search %} ( {{search}} )
+        {% endif %}
+    </h1>
+{% endif %}
+
 <hr>
 <div class="row">
     {% for film in films %}
         <div class="col-xs-6 col-md-3 films">
             <div class="film-img">
                 {% if ismyfilms %}
-                    <a href="/myfilminfo/{{film.film.name}}"><img src="/polls/static/media/{{film.film.image}}" width="150" /></a>
+                    <a href="/myfilminfo/{{film.film.name}}">
+                        <img src="/polls/static/media/{{film.film.image}}" width="150" />
+                        <span class="glyphicon glyphicon-play-circle ic-play"></span>
+                    </a>
                 {% else %}
-                    <a href="/filminfo/{{film.name}}"><img src="/polls/static/media/{{film.image}}" width="150" /></a>
+                    <a href="/filminfo/{{film.name}}">
+                        <img src="/polls/static/media/{{film.image}}" width="150" />
+                        <span class="glyphicon glyphicon-play-circle ic-play"></span>
+                    </a>
                 {% endif %}
             </div>
             <div class="film-name">
                 {% if ismyfilms %}
-                    <a href="/myfilminfo/{{film.film.name}}">{{film.film.name}}</a>
+                    {% if sorted == "grade" %}
+                        <div class="lead">
+                            <div id="hearts" class="starrr" style="height: 21px; font-size: 15px"></div>
+                        </div>
+                        <div class="name">
+                            <a href="/myfilminfo/{{film.film.name}}">{{film.film.name}}</a>
+                        </div>
+                    {% elif sorted == "date" %}
+                        <div class="date"> <!-- класс не используется -->
+                            {{film.date}}
+                        </div>
+                        <a href="/myfilminfo/{{film.film.name}}">{{film.film.name}}</a>
+                    {% else %}
+                        <a href="/myfilminfo/{{film.film.name}}">{{film.film.name}}</a>
+                    {% endif %}
                 {% else %}
                     <a href="/filminfo/{{film.name}}">{{film.name}}</a>
                 {% endif %}
@@ -30,6 +63,8 @@
             {% if ismyfilms %}
                 {% if search %}
                     <li class="arrow"><a href="/myfilms/page/{{films.previous_page_number}}?value={{search}}">&laquo;</a></li>
+                {% elif sorted %}
+                    <li class="arrow"><a href="/sorted/page/{{films.previous_page_number}}?value={{sorted}}">&laquo;</a></li>
                 {% else %}
                     <li class="arrow"><a href="/myfilms/page/{{films.previous_page_number}}">&laquo;</a></li>
                 {% endif %}
@@ -49,6 +84,8 @@
                 {% if ismyfilms %}
                     {% if search %}
                         <li class="current"><a href="/myfilms/page/{{page}}?value={{search}}">{{page}}</a></li>
+                    {% elif sorted %}
+                        <li class="current"><a href="/sorted/page/{{page}}?value={{sorted}}">{{page}}</a></li>
                     {% else %}
                         <li class="current"><a href="/myfilms/page/{{page}}">{{page}}</a></li>
                     {% endif %}
@@ -63,6 +100,8 @@
                 {% if ismyfilms %}
                     {% if search %}
                         <li><a href="/myfilms/page/{{page}}?value={{search}}">{{page}}</a></li>
+                    {% elif sorted %}
+                        <li><a href="/sorted/page/{{page}}?value={{sorted}}">{{page}}</a></li>
                     {% else %}
                         <li><a href="/myfilms/page/{{page}}">{{page}}</a></li>
                     {% endif %}
@@ -80,6 +119,8 @@
             {% if ismyfilms %}
                 {% if search %}
                     <li class="arrow"><a href="/myfilms/page/{{films.next_page_number}}?value={{search}}">&raquo;</a></li>
+                {% elif sorted %}
+                    <li class="arrow"><a href="/sorted/page/{{films.next_page_number}}?value={{sorted}}">&raquo;</a></li>
                 {% else %}
                     <li class="arrow"><a href="/myfilms/page/{{films.next_page_number}}">&raquo;</a></li>
                 {% endif %}

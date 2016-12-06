@@ -2,6 +2,21 @@
 
 {% load staticfiles %}
 
+<!--
+  - домашняя страница
+	- страница пользователя
+
+	- при сортировке отображать параметр сортировки !!!
+		( всегда ли отображать шкалу рейтинга ? films 38-52)
+	- добавить обратную сортировку !!!
+
+	- изменить отображение пагинации
+	- рейтинг фильмов
+
+	- возобновление пароля
+	- страница админа
+-->
+
 <html>
 		<head>
 				<meta charset="UTF-8">
@@ -12,6 +27,8 @@
 
 		    <link href="{% static '/css/bootstrap/bootstrap.css' %}" rel="stylesheet">
 		    <link href="{% static '/css/bootstrap/bootstrap-theme.css' %}" rel="stylesheet">
+
+				<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" >
 
 		    <script src="//code.jquery.com/jquery-3.1.1.min.js"></script>
 		    <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
@@ -24,14 +41,12 @@
 						    </div>
 						    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 										<ul class="nav navbar-nav">
-								        <!-- <li class="border-r"><a href="/">Главная</a></li> -->
 								        <li class="border-r"><a href="/films/page/1">Фильмы</a></li>
-												<!-- <li class="border-r"><a href="#">Топ</a></li> -->
 							      </ul>
 										<div class="col-lg-4">
 						            <form class="search-form" action="/films/page/1" method="get">
 							  						<div class="input-group">
-								                <input type="text" name="value" class="form-control xx input2" placeholder="Поиск фильмов...">
+								                <input type="text" class="form-control xx input2" name="value" placeholder="Поиск фильмов...">
 								    						<span class="input-group-btn">
 								    								<button class="btn btn-default xx" type="submit">Поиск</button>
 								    						</span>
@@ -42,17 +57,29 @@
 					              {% if not registered %}
 														<li class="border-l"><a class="bt width-login" href="/login">Войти</a></li>
 					              {% else %}
-														<!-- <li class="border-l"><a class="bt width-logout" href="/logout">Выйти</a></li> -->
 														<li class="border-l dropdown">
 														    <a href="#" data-toggle="dropdown" class="bt dropdown-toggle">
 														      	Name
 														      	<b class="caret"></b>
 														    </a>
-														    <ul class="dropdown-menu">
+														    <ul class="dropdown-menu profile-menu">
 																		<li><a href="#">Профиль</a></li>
 														      	<li><a href="/myfilms/page/1">Мои фильмы</a></li>
-																		<li><a href="#">Сортировать</a></li>
-																		<li><a href="#">Поиск</a></li>
+																		<li class="dropdown-submenu">
+																				<a>Сортировать</a>
+																				<ul class="dropdown-menu sort-h">
+																						<li><a href="/sorted/page/1?value=grade">По оценке</a></li>
+																						<li><a href="/sorted/page/1?value=date">По дате</a></li>
+															          </ul>
+																		</li>
+																		<li class="dropdown-submenu">
+															          <a>Поиск</a>
+															          <ul class="dropdown-menu search-h">
+																						<form class="" action="/myfilms/page/1" method="get">
+																								<input type="text" class="search-mf" name="value" placeholder="Поиск фильмов...">
+																						</form>
+															          </ul>
+														        </li>
 														      	<li class="divider"></li>
 														      	<li><a href="/logout">Выйти</a></li>
 														    </ul>
@@ -67,14 +94,6 @@
 								</div>
 				  	</div>
 				</nav>
-
-				<div class="container">
-				    <br><br><br><br>
-				    <div class="row lead">
-				        <div id="hearts" class="starrr"></div>
-				        You gave a rating of <span id="count">0</span> star(s)
-					</div>
-				</div>
 
 				<script type="text/javascript">
 						var __slice = [].slice;

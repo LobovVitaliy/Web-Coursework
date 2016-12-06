@@ -14,7 +14,7 @@ urlpatterns = [
 
     url(r'^rating$', views.rating, name = 'rating'),
     url(r'^add$', views.add, name = 'add'),
-    url(r'^sort$', views.sort, name = 'sort'),
+    url(r'^sorted/page/(\d+)$', views.sort, name = 'sort'),
 
     url(r'^myfilms/page/(\d+)$', views.myfilms, name = 'myfilms'),
     url(r'^myfilminfo/([\w.,!-? ]+)$', views.myfilminfo, name = 'myfilminfo'),

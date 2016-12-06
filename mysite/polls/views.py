@@ -6,7 +6,7 @@ from django.conf import settings
 from polls.models import User, Film
 import math, hashlib, datetime, os
 
-count_films_on_page = 10
+count_films_on_page = 4
 
 def make_password(password):
     salt = '&e2g$jR-%/frwR0()2>d#'
@@ -215,6 +215,7 @@ def d(request, name):
     print('#'*50)
     return render(request, 'html/films.html', {'registered': True})
 
+
 # должен работать!!! не всегда работает !!!
 def rating(request): # переделать
     if request.method == 'POST':
@@ -247,12 +248,9 @@ def rating(request): # переделать
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
 # должен работать!!!
-def sort(request):
+def sort(request, page_number):
     if request.method == 'GET':
         value = ' '.join(request.GET.get('value', '').strip().split())
-
-        #films = user.films[0]['film']
-        #films.sort(key = lambda x: x.year)
 
         if value:
             if 'id' in request.session:
@@ -266,7 +264,18 @@ def sort(request):
                     else:
                         return render(request, 'html/Error.html', {'error': 'Not Value!'})
 
-                    return render(request, 'html/sortedfilms.html', {'films': films}) # изменить страницу
+                    if int(page_number) >= 1 and int(page_number) <= math.ceil(len(films) / count_films_on_page):
+                        current_page = Paginator(films, count_films_on_page)
+
+                        args = {
+                            'films': current_page.page(page_number),
+                            'registered': True,
+                            'ismyfilms': True,
+                            'sorted': value
+                        }
+                        return render(request, 'html/films.html', args)
+                    else:
+                        return render(request, 'html/Error.html', {'error': '404 Not Found!'})
                 except:
                     return render(request, 'html/Error.html', {'error': '404 Not Found!'})
             else:
@@ -310,25 +319,25 @@ def myfilms(request, page_number):
         value = ' '.join(request.GET.get('value', '').strip().split())
 
         if 'id' in request.session:
-            #try:
-            user_id = request.session.get('id')
-            user = User.objects.get(id = user_id)
+            try:
+                user_id = request.session.get('id')
+                user = User.objects.get(id = user_id)
 
-            if not value:
-                films = user.films
-                args = {'search': ''}
-            else:
-                films = list(filter(lambda film: film['film'].name.lower().find(value.lower()) != -1, user.films))
-                args = {'search': value}
+                if not value:
+                    films = user.films
+                    args = {'search': ''}
+                else:
+                    films = list(filter(lambda film: film['film'].name.lower().find(value.lower()) != -1, user.films))
+                    args = {'search': value}
 
-            if int(page_number) >= 1 and int(page_number) <= math.ceil(len(films) / count_films_on_page):
-                current_page = Paginator(films, count_films_on_page)
-                args.update({'films': current_page.page(page_number), 'registered': True, 'ismyfilms': True})
-                return render(request, 'html/films.html', args)
-            else:
+                if int(page_number) >= 1 and int(page_number) <= math.ceil(len(films) / count_films_on_page):
+                    current_page = Paginator(films, count_films_on_page)
+                    args.update({'films': current_page.page(page_number), 'registered': True, 'ismyfilms': True})
+                    return render(request, 'html/films.html', args)
+                else:
+                    return render(request, 'html/Error.html', {'error': '404 Not Found!'})
+            except:
                 return render(request, 'html/Error.html', {'error': '404 Not Found!'})
-            #except:
-                #return render(request, 'html/Error.html', {'error': '404 Not Found!'})
         else:
             return render(request, 'html/Error.html', {'error': '401 Unauthorized!'})
     else:
