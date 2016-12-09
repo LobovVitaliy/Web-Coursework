@@ -1,0 +1,21 @@
+{% extends 'html/layout.html' %}
+
+{% block body %}
+
+<h1>Мой профиль</h1>
+<hr>
+<div class="row">
+    <div class="col-xs-6 col-md-4">
+        {% if not user.image %}
+            <img src="/polls/static/img/sm_1.jpg" width="270"/>
+        {% else %}
+            sfhdgf
+        {% endif %}
+    </div>
+    <div class="col-xs-6 col-md-8">
+        <h3>Ваше имя: {{user.name}}</h3><br>
+        <h3>Ваш mail: {{user.mail}}</h3>
+    </div>
+</div>
+
+{% endblock %}

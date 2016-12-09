@@ -1,37 +1,29 @@
-<!DOCTYPE html>
+{% extends 'html/layout.html' %}
 
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<title>Course Work</title>
-	</head>
+{% block body %}
 
-	<body>
-		<a href="/signup">Регистрация</a>
-		<a href="/login">Войти</a>
-		<a href="/logout">Выйти</a>
-		<hr>
-		<h1>Home</h1>
-		<hr>
-		Поиск:
-		<form action="/films/page/1" method="GET">
-			<input type="text" name="value" value="">
-			<input type="submit" name="submit" value="Поиск">
-		</form>
-		<a href="/films/page/1">Все фильмы</a>
-		<br>
-		<hr>
-		<h1>Зарегистрированы: {{registered}}</h1>
+<h1>О сайте</h1>
+<hr>
+<div class="row">
+    <div class="col-xs-6 col-md-6" style="text-align: center">
+        <h4>
+            Наш сайт создан для того, что бы вы имели
+            возможность сохранять свои любимые фильмы
+            в личном кабинете и просматривать их в любое
+            удобное вам время.
+            Если вы еще не зарегистрировались вы всё равно
+            можете смотреть фильмы, доступные на нашем сайте.
+            Приятного просмотра!
+        </h4>
+    </div>
+    <div class="col-xs-6 col-md-6">
+        <h4>
+            Зарегистрированные пользователи имеют возможность:<br><br>
+            - Cохранять фильмы в личном кабинете<br>
+            - Ставить рейтинги сохранённым фильмам<br>
+            - Сортировать фильмы
+        </h4>
+    </div>
+</div>
 
-		{% if registered %}
-			<form action="/add" method="POST">
-				<input type="text" name="name" value="фильм">
-				<input type="submit" name="submit" value="Добавить">
-			</form>
-			<br>
-			<a href="/myfilms/page/1">Мои фильмы</a><br><br><br><br>
-			<a href="/delmyfilms">Удалить все мои фильмы</a>
-		{% endif %}
-
-	</body>
-</html>
+{% endblock %}

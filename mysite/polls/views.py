@@ -49,7 +49,22 @@ def home(request):
             #user.delete()
             return render(request, 'html/home.html', {'registered': True})
         else:
-            return render(request, 'html/a.html', {'registered': False})
+            return render(request, 'html/home.html', {'registered': False})
+    else:
+        return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
+
+def profile(request):
+    if request.method == 'GET':
+        if 'id' in request.session:
+            try:
+                user_id = request.session.get('id')
+                user = User.objects.get(id = user_id)
+
+                return render(request, 'html/profile.html', {'registered': True, 'user': user})
+            except:
+                return render(request, 'html/Error.html', {'error': '404 Not Found!'})
+        else:
+            return render(request, 'html/Error.html', {'error': '401 Unauthorized!'})
     else:
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
@@ -200,7 +215,7 @@ def delete(request):
 
                     return redirect('/myfilms/page/1', {'registered': True})
                 except:
-                    return render(request, 'html/Error.html', {'error': 'sad404 Not Found!'})
+                    return render(request, 'html/Error.html', {'error': '404 Not Found!'})
             else:
                 return render(request, 'html/Error.html', {'error': '401 Unauthorized!'})
         else:

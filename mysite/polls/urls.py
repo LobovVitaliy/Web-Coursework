@@ -5,6 +5,8 @@ urlpatterns = [
     url(r'^$', views.home, name = "home"),
     url(r'^home$', views.home, name = 'home'), # возможно убрать заменить все шаблоны
 
+    url(r'^profile$', views.profile, name = 'profile'),
+
     url(r'^signup$', views.signup, name = 'signup'),
     url(r'^login$', views.login, name = 'login'),
     url(r'^logout$', views.logout, name = 'logout'),
