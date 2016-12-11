@@ -21,10 +21,11 @@ class User(Document):
     meta = {'collection': 'users'}
 
     role = StringField(default = 'user')
-    name = StringField(required = True) # пробелы
+    name = StringField(required = True)
     mail = EmailField(required = True, unique = True)
     password = StringField(required = True)
     image = StringField()
     gender = StringField()
-    about = StringField() # пробелы
+    about = StringField()
     films = ListField(DictField())
+    count = IntField(default = 0)

@@ -9,16 +9,35 @@
 {% endif %}
 
 {% if ismyfilms %}
-    <form class="f-right" action="/delete" method="POST">
+    <form class="f-right" action="/delete" method="post"> {% csrf_token %}
         <input type="text" name="name" value="{{film.film.name}}" hidden>
-        <input type="submit" class="bt bt-add-del bt-red" name="submit" value="Удалить">
+        <input type="submit" class="bt bt-add-del bt-red" value="Удалить">
     </form>
 {% else %}
-    <form class="f-right" action="/add" method="POST">
+    <form id="theForm" class="f-right" action="/add" method="post"> {% csrf_token %}
         <input type="text" name="name" value="{{film.name}}" hidden>
-        <input type="submit" class="bt bt-add-del bt-green" name="submit" value="Добавить">
+        <input type="submit" class="bt bt-add-del bt-green" value="Добавить">
     </form>
 {% endif %}
+
+<script>
+  $("#theForm").submit(function(event) {
+    event.preventDefault();
+    var msg = $('#theForm').serialize();
+    $.ajax({
+      type: 'POST',
+      url: '/add',
+      data: msg,
+
+      success: function(data) {
+        alert('OK!!!')
+      },
+      error:  function() {
+         alert('Возникла ошибка: ' + xhr);
+      }
+    });
+  });
+</script>
 
 <hr>
 <div class="row">

@@ -3,7 +3,6 @@
 {% load staticfiles %}
 
 <!--
-  - домашняя страница
 	- страница пользователя
 
 	- при сортировке отображать параметр сортировки
@@ -13,7 +12,6 @@
 	- изменить отображение пагинации
 	- рейтинг фильмов
 
-	- возобновление пароля
 	- страница админа
 -->
 
@@ -206,7 +204,49 @@
 						});
 				</script>
 
+				<script type="text/javascript">
+					  var csrftoken = $.cookie('csrftoken');
+					  function csrfSafeMethod(method) {
+					      // these HTTP methods do not require CSRF protection
+					  		return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+					  }
+					  $.ajaxSetup({
+					      beforeSend: function(xhr, settings) {
+					          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+					              xhr.setRequestHeader("X-CSRFToken", csrftoken);
+					          }
+					      }
+					  });
+				</script>
+
 				<article>
+						<script type="text/javascript">
+								$('#home').click(toHome);
+								$('#films').click(toFilms);
+								function toHome() {
+										$.ajax({
+												type: "GET",
+												url: "/",
+
+												success: function(data) {
+													$("body").html(data);
+													history.pushState(null, null, '/');
+												}
+									 });
+								}
+								function toFilms() {
+										$.ajax({
+												type: "GET",
+												url: "/films/page/1",
+
+												success: function(data) {
+													$("body").html(data);
+													history.pushState(null, null, '/films/page/1');
+												}
+									 });
+								}
+						</script>
+
 		      	{% block body %}{% endblock %}
 		    </article>
 				<footer>

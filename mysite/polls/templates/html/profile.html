@@ -13,8 +13,14 @@
         {% endif %}
     </div>
     <div class="col-xs-6 col-md-8">
-        <h3>Ваше имя: {{user.name}}</h3><br>
-        <h3>Ваш mail: {{user.mail}}</h3>
+        <h3>
+            Ваше имя: {{user.name}}<br><br>
+            Ваш mail: {{user.mail}}<br><br>
+            Количество фильмов: {{user.count}}
+        </h3>
+        <form class="" action="/delmyfilms" method="post"> {% csrf_token %}
+            <input type="submit" class="bt bt-add-del bt-red mt" value="Удалить всю коллекцию фильмов">
+        </form>
     </div>
 </div>
 

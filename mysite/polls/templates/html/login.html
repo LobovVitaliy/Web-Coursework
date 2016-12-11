@@ -5,7 +5,7 @@
 <div class="row">
     <div class="col-xs-6 col-md-6">
         <div class="form-data">
-            <form action="/login" method="post">
+            <form action="/login" method="post"> {% csrf_token %}
                 <div class="field">
                     <label>Введите Mail</label>
                     <input type="text" name="mail">
