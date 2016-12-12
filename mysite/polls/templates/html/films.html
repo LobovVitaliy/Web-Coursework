@@ -18,45 +18,52 @@
 
 <hr>
 <div class="row">
-    {% for film in films %}
-        <div class="col-xs-6 col-md-3 films">
-            <div class="film-img">
-                {% if ismyfilms %}
-                    <a href="/myfilminfo/{{film.film.name}}">
-                        <img src="/polls/static/media/{{film.film.image}}" width="150" />
-                        <span class="glyphicon glyphicon-play-circle ic-play"></span>
-                    </a>
-                {% else %}
-                    <a href="/filminfo/{{film.name}}">
-                        <img src="/polls/static/media/{{film.image}}" width="150" />
-                        <span class="glyphicon glyphicon-play-circle ic-play"></span>
-                    </a>
-                {% endif %}
-            </div>
-            <div class="film-name">
-                {% if ismyfilms %}
-                    {% if sorted == "grade" %}
-                        <div class="lead">
-                            <div id="hearts" class="starrr" style="height: 21px; font-size: 15px"></div>
-                        </div>
-                        <div class="name">
-                            <a href="/myfilminfo/{{film.film.name}}">{{film.film.name}}</a>
-                        </div>
-                    {% elif sorted == "date" %}
-                        <div class="date"> <!-- класс не используется -->
-                            {{film.date}}
-                        </div>
-                        <a href="/myfilminfo/{{film.film.name}}">{{film.film.name}}</a>
-                    {% else %}
-                        <a href="/myfilminfo/{{film.film.name}}">{{film.film.name}}</a>
-                    {% endif %}
-                {% else %}
-                    <a href="/filminfo/{{film.name}}">{{film.name}}</a>
-                {% endif %}
-            </div>
+{% for film in films %}
+    <div class="col-xs-6 col-md-3 films">
+        <div class="film-img">
+            {% if ismyfilms %}
+                <a href="/myfilminfo/{{film.film.name}}">
+                    <img src="/polls/static/media/{{film.film.image}}" width="150" />
+                    <span class="glyphicon glyphicon-play-circle ic-play"></span>
+                </a>
+            {% else %}
+                <a href="/filminfo/{{film.name}}">
+                    <img src="/polls/static/media/{{film.image}}" width="150" />
+                    <span class="glyphicon glyphicon-play-circle ic-play"></span>
+                </a>
+            {% endif %}
         </div>
-    {% endfor %}
+        <div class="film-name">
+            {% if ismyfilms %}
+                {% if sorted == "grade" %}
+                    <div class="lead">
+                        <div id="hearts" class="starrr star-info" data-rating={{film.grade}}></div>
+                    </div>
+                    <div class="name">
+                        <a href="/myfilminfo/{{film.film.name}}">{{film.film.name}}</a>
+                    </div>
+                {% elif sorted == "date" %}
+                    <div class="date"> <!-- класс не используется -->
+                        {{film.date|date:"f d-m-Y"}}
+                    </div>
+                    <a href="/myfilminfo/{{film.film.name}}">{{film.film.name}}</a>
+                {% else %}
+                    <a href="/myfilminfo/{{film.film.name}}">{{film.film.name}}</a>
+                {% endif %}
+            {% else %}
+                <a href="/filminfo/{{film.name}}">{{film.name}}</a>
+            {% endif %}
+        </div>
+    </div>
+
+{% if forloop.counter|divisibleby:"4" and forloop.counter != films|length %}
 </div>
+<div class="row">
+{% endif %}
+
+{% endfor %}
+</div>
+
 <div class="row outer">
     <ul class="pagination inner">
         {% if films.has_previous %}
@@ -137,4 +144,107 @@
     </ul>
 </div>
 
+<script type="text/javascript">
+    var __slice = [].slice;
+
+    (function($, window) {
+        var Starrr;
+
+        Starrr = (function() {
+            Starrr.prototype.defaults = {
+                rating: void 0,
+                numStars: 10,
+                change: function(e, value) {}
+            };
+
+            function Starrr($el, options) {
+                var i, _, _ref, _this = this;
+
+                this.options = $.extend({}, this.defaults, options);
+                this.$el = $el;
+                _ref = this.defaults;
+                for (i in _ref) {
+                    _ = _ref[i];
+                    if (this.$el.data(i) != null) {
+                        this.options[i] = this.$el.data(i);
+                    }
+                }
+                this.createStars();
+                this.syncRating();
+            }
+
+            Starrr.prototype.createStars = function() {
+                var _i, _ref, _results;
+
+                _results = [];
+                for (_i = 1, _ref = this.options.numStars; 1 <= _ref ? _i <= _ref : _i >= _ref; 1 <= _ref ? _i++ : _i--) {
+                    _results.push(this.$el.append("<span class='glyphicon .glyphicon-star-empty'></span>"));
+                }
+                return _results;
+            };
+
+            Starrr.prototype.setRating = function(rating) {
+                this.options.rating = rating;
+                this.syncRating();
+                return this.$el.trigger('starrr:change', rating);
+            };
+
+            Starrr.prototype.syncRating = function(rating) {
+                var i, _i, _j, _ref;
+
+                rating || (rating = this.options.rating);
+                if (rating) {
+                    for (i = _i = 0, _ref = rating - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+                        this.$el.find('span').eq(i).removeClass('glyphicon-star-empty').addClass('glyphicon-star');
+                    }
+                }
+                if (rating && rating < 10) {
+                    for (i = _j = rating; rating <= 9 ? _j <= 9 : _j >= 9; i = rating <= 9 ? ++_j : --_j) {
+                        this.$el.find('span').eq(i).removeClass('glyphicon-star').addClass('glyphicon-star-empty');
+                    }
+                }
+                if (!rating) {
+                    return this.$el.find('span').removeClass('glyphicon-star').addClass('glyphicon-star-empty');
+                }
+            };
+
+            return Starrr;
+        })();
+
+        return $.fn.extend({
+            starrr: function() {
+                var args, option;
+
+                option = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+                return this.each(function() {
+                    var data;
+
+                    data = $(this).data('star-rating');
+                    if (!data) {
+                        $(this).data('star-rating', (data = new Starrr($(this), option)));
+                    }
+                    if (typeof option === 'string') {
+                        return data[option].apply(data, args);
+                    }
+                });
+            }
+        });
+    })(window.jQuery, window);
+
+    $(function() {
+        return $(".starrr").starrr();
+    });
+</script>
+
 {% endblock %}
+
+
+
+<!-- char * pointerRed = str;
+
+while (*pointerRed != '\0') {
+  if (isdigit(*pointerRed) || *pointerRed == '-') {
+    var * pointerGreen = pointerRed;
+    ...
+  }
+} -->

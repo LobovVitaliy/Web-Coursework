@@ -7,6 +7,9 @@ body {
 a {
 	text-decoration: none !important;
 }
+input[type="submit"] {
+	outline: none;
+}
 /* ################### Body ################### */
 
 /* ################### Nav ################### */
@@ -113,6 +116,7 @@ nav a {
 }
 
 .xx {
+	outline: none !important;
 	height: 40px !important;
 	font-size: 18px !important;
 	margin-top: 5px;
@@ -177,6 +181,7 @@ article {
 /* ################### Films ################### */
 .films {
 	margin-top: 30px;
+
 }
 .film-img {
 	height: 225px;
@@ -197,6 +202,10 @@ article {
 	text-align: center;
 	margin-top: -145px;
 	font-size: 50px;
+}
+.star-info {
+	height: 21px;
+	font-size: 15px
 }
 .film-name {
 	width: 150px;
