@@ -9,6 +9,8 @@ urlpatterns = [
     url(r'^login$', views.login, name = 'login'),
     url(r'^logout$', views.logout, name = 'logout'),
 
+    url(r'^search$', views.search, name = 'search'),
+
     url(r'^films/page/(\d+)$', views.films, name = 'films'),
     url(r'^filminfo/([\w.,! -]+)$', views.filminfo, name = 'filminfo'),
 

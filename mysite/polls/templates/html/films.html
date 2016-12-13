@@ -144,6 +144,46 @@
     </ul>
 </div>
 
+<input type="text" style="color: red" name="referal" placeholder="Живой поиск" value="" class="who"  autocomplete="off">
+<ul class="search_result"></ul>
+
+<script type="text/javascript">
+$(function(){
+
+//Живой поиск
+$('.who').bind("change keyup input click", function() {
+  if(this.value.length >= 2){
+      $.ajax({
+          type: 'GET',
+          url: "/search",
+          data: {'value': this.value},
+          response: 'text',
+
+          success: function(data) {
+              console.log('####################')
+              for(var i=0; i<data.length; i++) {
+                  console.log('find:' + data[i].name);
+              }
+              console.log('####################')
+         }
+     })
+  }
+})
+
+$(".search_result").hover(function(){
+  $(".who").blur(); //Убираем фокус с input
+})
+
+//При выборе результата поиска, прячем список и заносим выбранный результат в input
+$(".search_result").on("click", "li", function(){
+  s_user = $(this).text();
+  //$(".who").val(s_user).attr('disabled', 'disabled'); //деактивируем input, если нужно
+  $(".search_result").fadeOut();
+})
+
+})
+</script>
+
 <script type="text/javascript">
     var __slice = [].slice;
 
@@ -237,14 +277,3 @@
 </script>
 
 {% endblock %}
-
-
-
-<!-- char * pointerRed = str;
-
-while (*pointerRed != '\0') {
-  if (isdigit(*pointerRed) || *pointerRed == '-') {
-    var * pointerGreen = pointerRed;
-    ...
-  }
-} -->

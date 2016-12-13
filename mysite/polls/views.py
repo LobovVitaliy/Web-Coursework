@@ -6,7 +6,7 @@ from django.conf import settings
 from polls.models import User, Film
 import math, hashlib, datetime, os, re, json
 
-count_films_on_page = 8
+count_films_on_page = 4
 
 def make_password(password):
     salt = '&e2g$jR-%/frwR0()2>d#'
@@ -149,6 +149,21 @@ def logout(request):
     except KeyError:
         pass
     return redirect('/')
+
+def search(request):
+    if request.method == 'GET':
+        value = ' '.join(request.GET.get('value', '').strip().split())
+
+        films = Film.objects.filter(name__icontains = value)
+        for f in films:
+            a = f.__dict__['_data']
+            a.update({'id': str(a['id'])})
+
+        b = json.dumps([f.__dict__['_data'] for f in films])
+        return HttpResponse(b, content_type = 'application/json', status = 200)
+        return HttpResponse(json.dumps({'data':'3'}), content_type = 'application/json', status = 200)
+    else:
+        return HttpResponse(json.dumps({'data': '405 Method Not Allowed!'}), content_type = 'application/json', status = 405)
 
 def films(request, page_number):
     if request.method == 'GET':
