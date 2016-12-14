@@ -36,12 +36,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'mongoengine.django.mongo_auth', # new
+    #'mongoengine.django.mongo_auth', # new
     'polls',
 ]
 
-AUTH_USER_MODEL = 'mongo_auth.MongoUser'  # new
-MONGOENGINE_USER_DOCUMENT = 'mongoengine.django.auth.User'  # new
+#AUTH_USER_MODEL = 'mongo_auth.MongoUser'  # new
+#MONGOENGINE_USER_DOCUMENT = 'mongoengine.django.auth.User'  # new
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -84,26 +84,26 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
     }
 }"""
 
-from mongoengine import connect
-connect('test')
-
-DATABASES = {
-    'default': {'ENGINE': 'django.db.backends.dummy'}
-}
+# from mongoengine import connect
+# connect('test')
+#
+# DATABASES = {
+#     'default': {'ENGINE': 'django.db.backends.dummy'}
+# }
 
 SESSION_ENGINE = 'mongoengine.django.sessions'  # new
 #SESSION_SERIALIZER = 'mongoengine.django.sessions.BSONSerializer'   # new
 
-AUTHENTICATION_BACKENDS = [ # new
-    'mongoengine.django.auth.MongoEngineBackend',
-]
+# AUTHENTICATION_BACKENDS = [ # new
+#     'mongoengine.django.auth.MongoEngineBackend',
+# ]
 
-REST_FRAMEWORK = {
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',
-    )
-}
+# REST_FRAMEWORK = {
+#     'DEFAULT_RENDERER_CLASSES': (
+#         'rest_framework.renderers.JSONRenderer',
+#         'rest_framework.renderers.BrowsableAPIRenderer',
+#     )
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
