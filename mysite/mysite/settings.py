@@ -94,7 +94,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # }
 
 
-from mongoengine import connect
+from polls.mongoengine import connect
 connect('work', 'default', host = 'mongodb://work:work@ds131878.mlab.com:31878/work')
 
 DATABASES = {
