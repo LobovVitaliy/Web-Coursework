@@ -93,8 +93,6 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 #     'default': {'ENGINE': 'django.db.backends.dummy'}
 # }
 
-from polls.mongoengine import connect
-connect('work')
 
 DATABASES = {
     'default': {
@@ -119,7 +117,7 @@ try:
     from .local_settings import *
 except ImportError:
     pass
-    
+
 #import dj_database_url
 #DATABASES['default'] = dj_database_url.config(default='mongodb://work:work@ds131878.mlab.com:31878/work')
 
