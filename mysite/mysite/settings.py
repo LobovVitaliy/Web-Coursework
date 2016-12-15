@@ -107,7 +107,7 @@ DATABASES = {
 import dj_database_url
 DATABASES['default'] = dj_database_url.config(default='mongodb://work:work@ds131878.mlab.com:31878/work')
 
-SESSION_ENGINE = 'mongoengine.django.sessions'  # new
+SESSION_ENGINE = 'mysite.mongoengine.django.sessions'  # new
 #SESSION_SERIALIZER = 'mongoengine.django.sessions.BSONSerializer'   # new
 
 # AUTHENTICATION_BACKENDS = [ # new
