@@ -100,11 +100,10 @@ DATABASES = {
         'NAME': 'work',
         'USER': 'work',
         'PASSWORD': 'work',
-        'HOST': 'ds131878.mlab.com',
+        'HOST': 'mongodb://work:work@ds131878.mlab.com:31878/work',
         'PORT': '31878',
     }
 }
-MONGODB_SETTINGS = {'db':'work', 'alias':'default'}
 
 # Parse database configuration from $DATABASE_URL
 import dj_database_url
