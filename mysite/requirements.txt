@@ -3,3 +3,5 @@ gunicorn==19.6.0
 whitenoise==3.2.2
 mongoengine==0.8.0
 pymongo==2.8
+
+dj-database-url==0.4.1
