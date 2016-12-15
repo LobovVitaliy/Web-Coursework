@@ -104,12 +104,7 @@ DATABASES = {
         'PORT': '31878',
     }
 }
-
-MONGO_DATABASE_NAME = 'work'
-
-from polls.mongoengine import connect
-
-DEFAULT_CONNECTION_NAME = connect(MONGO_DATABASE_NAME, 'ds131878.mlab.com:31878')
+app.config['MONGODB_SETTINGS'] = {'db':'work', 'alias':'default'}
 
 # Parse database configuration from $DATABASE_URL
 import dj_database_url
