@@ -95,7 +95,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django_mongodb_engine',
+        'ENGINE': 'django.db.backends.dummy',
         'NAME': 'work',
         'USER': 'work',
         'PASSWORD': 'work',
