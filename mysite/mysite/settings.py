@@ -112,6 +112,9 @@ DATABASES['default'] = dj_database_url.config()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 ALLOWED_HOSTS = ['*']
 
+from mongoengine import connect
+connect('work')
+
 #import dj_database_url
 #DATABASES['default'] = dj_database_url.config(default='mongodb://work:work@ds131878.mlab.com:31878/work')
 
