@@ -1,5 +1,5 @@
 from django.db import models
-from mongoengine import *
+from ..mongoengine import *
 
 # Create your models here.
 
