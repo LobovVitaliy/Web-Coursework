@@ -99,12 +99,13 @@ DATABASES = {
         'NAME': 'work',
         'USER': 'work',
         'PASSWORD': 'work',
-        'HOST': 'mongodb://work:work@ds131878.mlab.com:31878/work',
+        'HOST': 'ds131878.mlab.com',
+        'PORT': '31878',
     }
 }
 
-import dj_database_url
-DATABASES['default'] = dj_database_url.config(default='mongodb://work:work@ds131878.mlab.com:31878/work')
+#import dj_database_url
+#DATABASES['default'] = dj_database_url.config(default='mongodb://work:work@ds131878.mlab.com:31878/work')
 
 SESSION_ENGINE = 'polls.mongoengine.django.sessions'  # new
 #SESSION_SERIALIZER = 'mongoengine.django.sessions.BSONSerializer'   # new
