@@ -22,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'n2f7pcfo0g8qz7kzzda2q0+@!%6#1i7&mbhh66*a7n!s11l&4v'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -115,6 +115,11 @@ DATABASES['default'] = dj_database_url.config()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 ALLOWED_HOSTS = ['*']
 
+try:
+    from .local_settings import *
+except ImportError:
+    pass
+    
 #import dj_database_url
 #DATABASES['default'] = dj_database_url.config(default='mongodb://work:work@ds131878.mlab.com:31878/work')
 
