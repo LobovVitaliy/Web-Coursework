@@ -17,16 +17,16 @@ def _import_class(cls_name):
     deref_classes = ('DeReference',)
 
     if cls_name in doc_classes:
-        from mongoengine import document as module
+        from polls.mongoengine import document as module
         import_classes = doc_classes
     elif cls_name in field_classes:
-        from mongoengine import fields as module
+        from polls.mongoengine import fields as module
         import_classes = field_classes
     elif cls_name in queryset_classes:
-        from mongoengine import queryset as module
+        from polls.mongoengine import queryset as module
         import_classes = queryset_classes
     elif cls_name in deref_classes:
-        from mongoengine import dereference as module
+        from polls.mongoengine import dereference as module
         import_classes = deref_classes
     else:
         raise ValueError('No import set for: ' % cls_name)
