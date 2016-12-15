@@ -97,20 +97,21 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 from polls.mongoengine import connect
 connect('work', 'default', host = 'mongodb://work:work@ds131878.mlab.com:31878/work')
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.dummy',
-        'NAME': 'work',
-        'USER': 'work',
-        'PASSWORD': 'work',
-        'HOST': 'ds131878.mlab.com',
-        'PORT': '31878',
-    }
-}
 
-# Parse database configuration from $DATABASE_URL
-# import dj_database_url
-# DATABASES['default'] = dj_database_url.config()
+import dj_database_url
+DATABASES['default'] = dj_database_url.config()
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.dummy',
+#         'NAME': 'work',
+#         'USER': 'work',
+#         'PASSWORD': 'work',
+#         'HOST': 'ds131878.mlab.com',
+#         'PORT': '31878',
+#     }
+# }
+
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
