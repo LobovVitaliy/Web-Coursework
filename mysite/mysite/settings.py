@@ -93,6 +93,17 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 #     'default': {'ENGINE': 'django.db.backends.dummy'}
 # }
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.dummy',
+        'NAME': 'work',
+        'USER': 'work',
+        'PASSWORD': 'work',
+        'HOST': 'mongodb://work:work@ds131878.mlab.com:31878/work',
+        'PORT': 10000,
+    }
+}
+
 SESSION_ENGINE = 'mongoengine.django.sessions'  # new
 #SESSION_SERIALIZER = 'mongoengine.django.sessions.BSONSerializer'   # new
 
