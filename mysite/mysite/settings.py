@@ -98,11 +98,13 @@ from polls.mongoengine import connect
 connect('work', 'default', host = 'mongodb://work:work@ds131878.mlab.com:31878/work')
 
 
-import dj_database_url
 DATABASES = {
-    'default' = dj_database_url.config()
+    'default': {
+        'ENGINE': 'django.db.backends.dummy'
+    }
 }
 
+import dj_database_url
 DATABASES['default'] = dj_database_url.config()
 
 # DATABASES = {
