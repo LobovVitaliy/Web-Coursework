@@ -95,7 +95,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 MONGO_DATABASE_NAME = 'work'
 
-from mongoengine import connect
+from polls.mongoengine import connect
 
 DEFAULT_CONNECTION_NAME = connect(MONGO_DATABASE_NAME)
 
