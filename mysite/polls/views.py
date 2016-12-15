@@ -179,12 +179,12 @@ def films(request, page_number):
         if int(page_number) >= 1 and int(page_number) <= math.ceil(len(films) / count_films_on_page):
             current_page = Paginator(films, count_films_on_page)
 
-            #args = getArgs(request, args)
+            args = getArgs(request, args)
             args.update({'films': current_page.page(page_number), 'ismyfilms': False})
 
             return render(request, 'html/films.html', args)
         else:
-            #args = getArgs(request, error = '404 Not Found!')
+            args = getArgs(request, error = '404 Not Found!')
             return render(request, 'html/Error.html', args)
     else:
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
