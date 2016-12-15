@@ -93,6 +93,11 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 #     'default': {'ENGINE': 'django.db.backends.dummy'}
 # }
 
+MONGO_DATABASE_NAME = 'work'
+
+from mongoengine import connect
+
+DEFAULT_CONNECTION_NAME = connect(MONGO_DATABASE_NAME)
 
 DATABASES = {
     'default': {
@@ -107,6 +112,7 @@ DATABASES = {
 
 # Parse database configuration from $DATABASE_URL
 import dj_database_url
+DATABASES['default'] = dj_database_url.config()
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
