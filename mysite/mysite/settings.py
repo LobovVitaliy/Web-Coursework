@@ -104,7 +104,7 @@ DATABASES = {
         'PORT': '31878',
     }
 }
-app.config['MONGODB_SETTINGS'] = {'db':'work', 'alias':'default'}
+MONGODB_SETTINGS = {'db':'work', 'alias':'default'}
 
 # Parse database configuration from $DATABASE_URL
 import dj_database_url
