@@ -100,7 +100,6 @@ DATABASES = {
         'USER': 'work',
         'PASSWORD': 'work',
         'HOST': 'mongodb://work:work@ds131878.mlab.com:31878/work',
-        'PORT': 10000,
     }
 }
 
