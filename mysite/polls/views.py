@@ -42,6 +42,14 @@ def getArgs(request, args = None, error = None):
 
     return args
 
+def check_null_pointer(user):
+    for film in user.films:
+        try:
+            f = Film.objects.get(id = film['film'].id) # film.id (film['id'])
+        except:
+            user.update(pull__films__id = film['id'])
+            user.update(set__count = user.count - 1)
+            
 # Create your views here.
 
 # session by id ?
