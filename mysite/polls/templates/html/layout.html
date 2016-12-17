@@ -111,7 +111,7 @@
 								            success: function(data) { //.replace(/</g,"&lt;")
 								                $("#list").html('');
 								                for(var i = 0; i < data.length; i++) {
-								                    $("#list").append('<option>' +  data[i].name + '</option>');
+								                    $("#list").append('<option>' +  data[i].name.replace(/</g,"&lt;") + '</option>');
 								                }
 								            }
 								        })
