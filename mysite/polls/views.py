@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, HttpResponseRedirect, HttpResponse
-from mongoengine.errors import NotUniqueError, ValidationError
+from .mongoengine.errors import NotUniqueError, ValidationError
 from django.core.paginator import Paginator
 from django.conf import settings
 
