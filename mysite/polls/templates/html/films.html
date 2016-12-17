@@ -67,122 +67,168 @@
 <div class="row outer">
     <ul class="pagination inner">
         {% if films.has_previous %}
-            {% if ismyfilms %}
-                {% if search %}
-                    <li class="arrow"><a href="/myfilms/page/{{films.previous_page_number}}?value={{search}}">&laquo;</a></li>
-                {% elif sorted %}
-                    <li class="arrow"><a href="/sorted/page/{{films.previous_page_number}}?value={{sorted}}">&laquo;</a></li>
+            <li class="arrow">
+                {% if ismyfilms %}
+                    {% if search %}
+                        <a href="/myfilms/page/{{films.previous_page_number}}?value={{search}}">&laquo;</a>
+                    {% elif sorted %}
+                        <a href="/sorted/page/{{films.previous_page_number}}?value={{sorted}}">&laquo;</a>
+                    {% else %}
+                        <a href="/myfilms/page/{{films.previous_page_number}}">&laquo;</a>
+                    {% endif %}
                 {% else %}
-                    <li class="arrow"><a href="/myfilms/page/{{films.previous_page_number}}">&laquo;</a></li>
+                    {% if search %}
+                        <a href="/films/page/{{films.previous_page_number}}?value={{search}}">&laquo;</a>
+                    {% else %}
+                        <a href="/films/page/{{films.previous_page_number}}">&laquo;</a>
+                    {% endif %}
                 {% endif %}
+            </li>
+        {% else %}
+            <li class="arrow disabled"><a>&laquo;</a></li>
+        {% endif %}
+
+        <!-- {% if ismyfilms %}
+            {% if search %}
+
+            {% elif sorted %}
+
             {% else %}
-                {% if search %}
-                    <li class="arrow"><a href="/films/page/{{films.previous_page_number}}?value={{search}}">&laquo;</a></li>
-                {% else %}
-                    <li class="arrow"><a href="/films/page/{{films.previous_page_number}}">&laquo;</a></li>
-                {% endif %}
+
             {% endif %}
         {% else %}
-            <li class="arrow unavailable"><a>&laquo;</a></li>
+            {% if search %}
+
+            {% else %}
+
+            {% endif %}
+        {% endif %} -->
+
+        <!-- {% if films.number <= 4 %}
+            {% for i in "x"|rjust:"4" %}
+                {% if films.number == forloop.counter %}
+                    <li class="active">
+                        {% if ismyfilms %}
+                            {% if search %}
+
+                            {% elif sorted %}
+
+                            {% else %}
+
+                            {% endif %}
+                        {% else %}
+                            {% if search %}
+
+                            {% else %}
+                                <a href="/films/page/{{forloop.counter}}">{{forloop.counter}}</a>
+                            {% endif %}
+                        {% endif %}
+                    </li>
+                {% else %}
+                    <li><a href="/films/page/{{forloop.counter}}">{{forloop.counter}}</a></li>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <li><a href="/films/page/1">1</a></li>
         {% endif %}
+
+        <li class="disabled"><a>...</a></li>
+
+        {% if films.number > 4 and films.number <= films.paginator.page_range|length|add:"-3" %}
+            <li><a href="/films/page/{{films.number|add:"-1"}}">{{films.number|add:"-1"}}</a></li>
+            <li class="active"><a href="/films/page/{{films.number}}">{{films.number}}</a></li>
+            <li><a href="/films/page/{{films.number|add:"+1"}}">{{films.number|add:"+1"}}</a></li>
+
+            <li class="disabled"><a>...</a></li>
+        {% endif %}
+
+        {% if films.number > films.paginator.page_range|length|add:"-3" %}
+            <li><a href="/films/page/{{films.paginator.page_range|length|add:"-3"}}">{{films.paginator.page_range|length|add:"-3"}}</a></li>
+
+            {% if films.number == films.paginator.page_range|length|add:"-2" %}
+                <li class="active"><a href="/films/page/{{films.paginator.page_range|length|add:"-2"}}">{{films.paginator.page_range|length|add:"-2"}}</a></li>
+            {% else %}
+                <li><a href="/films/page/{{films.paginator.page_range|length|add:"-2"}}">{{films.paginator.page_range|length|add:"-2"}}</a></li>
+            {% endif %}
+
+            {% if films.number == films.paginator.page_range|length|add:"-1" %}
+                <li class="active"><a href="/films/page/{{films.paginator.page_range|length|add:"-1"}}">{{films.paginator.page_range|length|add:"-1"}}</a></li>
+            {% else %}
+                <li><a href="/films/page/{{films.paginator.page_range|length|add:"-1"}}">{{films.paginator.page_range|length|add:"-1"}}</a></li>
+            {% endif %}
+        {% endif %}
+
+        {% if films.number == films.paginator.page_range|length %}
+            <li class="active"><a href="/films/page/{{films.paginator.page_range|length}}">{{films.paginator.page_range|length}}</a></li>
+        {% else %}
+            <li><a href="/films/page/{{films.paginator.page_range|length}}">{{films.paginator.page_range|length}}</a></li>
+        {% endif %} -->
+
+        <!-- previous version -->
 
         {% for page in films.paginator.page_range %}
             {% if page == films.number %}
-                {% if ismyfilms %}
-                    {% if search %}
-                        <li class="current"><a href="/myfilms/page/{{page}}?value={{search}}">{{page}}</a></li>
-                    {% elif sorted %}
-                        <li class="current"><a href="/sorted/page/{{page}}?value={{sorted}}">{{page}}</a></li>
+                <li class="active">
+                    {% if ismyfilms %}
+                        {% if search %}
+                            <a href="/myfilms/page/{{page}}?value={{search}}">{{page}}</a>
+                        {% elif sorted %}
+                            <a href="/sorted/page/{{page}}?value={{sorted}}">{{page}}</a>
+                        {% else %}
+                            <a href="/myfilms/page/{{page}}">{{page}}</a>
+                        {% endif %}
                     {% else %}
-                        <li class="current"><a href="/myfilms/page/{{page}}">{{page}}</a></li>
+                        {% if search %}
+                            <a href="/films/page/{{page}}?value={{search}}">{{page}}</a>
+                        {% else %}
+                            <a href="/films/page/{{page}}">{{page}}</a>
+                        {% endif %}
                     {% endif %}
-                {% else %}
-                    {% if search %}
-                        <li class="current"><a href="/films/page/{{page}}?value={{search}}">{{page}}</a></li>
-                    {% else %}
-                        <li class="current"><a href="/films/page/{{page}}">{{page}}</a></li>
-                    {% endif %}
-                {% endif %}
+                </li>
             {% else %}
-                {% if ismyfilms %}
-                    {% if search %}
-                        <li><a href="/myfilms/page/{{page}}?value={{search}}">{{page}}</a></li>
-                    {% elif sorted %}
-                        <li><a href="/sorted/page/{{page}}?value={{sorted}}">{{page}}</a></li>
+                <li>
+                    {% if ismyfilms %}
+                        {% if search %}
+                            <a href="/myfilms/page/{{page}}?value={{search}}">{{page}}</a>
+                        {% elif sorted %}
+                            <a href="/sorted/page/{{page}}?value={{sorted}}">{{page}}</a>
+                        {% else %}
+                            <a href="/myfilms/page/{{page}}">{{page}}</a>
+                        {% endif %}
                     {% else %}
-                        <li><a href="/myfilms/page/{{page}}">{{page}}</a></li>
+                        {% if search %}
+                            <a href="/films/page/{{page}}?value={{search}}">{{page}}</a>
+                        {% else %}
+                            <a href="/films/page/{{page}}">{{page}}</a>
+                        {% endif %}
                     {% endif %}
-                {% else %}
-                    {% if search %}
-                        <li><a href="/films/page/{{page}}?value={{search}}">{{page}}</a></li>
-                    {% else %}
-                        <li><a href="/films/page/{{page}}">{{page}}</a></li>
-                    {% endif %}
-                {% endif %}
+                </li>
             {% endif %}
         {% endfor %}
 
         {% if films.has_next %}
-            {% if ismyfilms %}
-                {% if search %}
-                    <li class="arrow"><a href="/myfilms/page/{{films.next_page_number}}?value={{search}}">&raquo;</a></li>
-                {% elif sorted %}
-                    <li class="arrow"><a href="/sorted/page/{{films.next_page_number}}?value={{sorted}}">&raquo;</a></li>
+            <li class="arrow">
+                {% if ismyfilms %}
+                    {% if search %}
+                        <a href="/myfilms/page/{{films.next_page_number}}?value={{search}}">&raquo;</a>
+                    {% elif sorted %}
+                        <a href="/sorted/page/{{films.next_page_number}}?value={{sorted}}">&raquo;</a>
+                    {% else %}
+                        <a href="/myfilms/page/{{films.next_page_number}}">&raquo;</a>
+                    {% endif %}
                 {% else %}
-                    <li class="arrow"><a href="/myfilms/page/{{films.next_page_number}}">&raquo;</a></li>
+                    {% if search %}
+                        <a href="/films/page/{{films.next_page_number}}?value={{search}}">&raquo;</a>
+                    {% else %}
+                        <a href="/films/page/{{films.next_page_number}}">&raquo;</a>
+                    {% endif %}
                 {% endif %}
-            {% else %}
-                {% if search %}
-                    <li class="arrow"><a href="/films/page/{{films.next_page_number}}?value={{search}}">&raquo;</a></li>
-                {% else %}
-                    <li class="arrow"><a href="/films/page/{{films.next_page_number}}">&raquo;</a></li>
-                {% endif %}
-            {% endif %}
+            </li>
         {% else %}
-            <li class="arrow unavailable"><a>&raquo;</a></li>
+            <li class="arrow disabled"><a>&raquo;</a></li>
         {% endif %}
     </ul>
 </div>
-
-<input type="text" style="color: red" name="referal" placeholder="Живой поиск" value="" class="who"  autocomplete="off">
-<ul class="search_result"></ul>
-
-<script type="text/javascript">
-$(function(){
-
-//Живой поиск
-$('.who').bind("change keyup input click", function() {
-  if(this.value.length >= 2){
-      $.ajax({
-          type: 'GET',
-          url: "/search",
-          data: {'value': this.value},
-          response: 'text',
-
-          success: function(data) {
-              console.log('####################')
-              for(var i=0; i<data.length; i++) {
-                  console.log('find:' + data[i].name);
-              }
-              console.log('####################')
-         }
-     })
-  }
-})
-
-$(".search_result").hover(function(){
-  $(".who").blur(); //Убираем фокус с input
-})
-
-//При выборе результата поиска, прячем список и заносим выбранный результат в input
-$(".search_result").on("click", "li", function(){
-  s_user = $(this).text();
-  //$(".who").val(s_user).attr('disabled', 'disabled'); //деактивируем input, если нужно
-  $(".search_result").fadeOut();
-})
-
-})
-</script>
 
 <script type="text/javascript">
     var __slice = [].slice;

@@ -44,8 +44,9 @@
 										<div class="col-lg-4">
 						            <form class="search-form" action="/films/page/1" method="get">
 							  						<div class="input-group">
-								                <input type="text" class="form-control xx input2" name="value" placeholder="Поиск фильмов...">
-								    						<span class="input-group-btn">
+								                <input type="text" class="form-control xx input2" list="list" autocomplete="off" name="value" placeholder="Поиск фильмов...">
+																<datalist id="list"></datalist>
+																<span class="input-group-btn">
 								    								<button class="btn btn-default xx" type="submit">Поиск</button>
 								    						</span>
 							  						</div>
@@ -74,7 +75,8 @@
 															          <a>Поиск</a>
 															          <ul class="dropdown-menu search-h">
 																						<form class="" action="/myfilms/page/1" method="get">
-																								<input type="text" class="search-mf" name="value" placeholder="Поиск фильмов...">
+																								<input type="text" class="search-mf" list="list-mf" autocomplete="off" name="value" placeholder="Поиск фильмов...">
+																								<datalist id="list-mf"></datalist>
 																						</form>
 															          </ul>
 														        </li>
@@ -92,6 +94,52 @@
 								</div>
 				  	</div>
 				</nav>
+
+				<script type="text/javascript">
+						$(function() {
+								$('.input2').bind("change keyup", function() {
+										if (this.value.length == 0) {
+												$("#list").html('');
+										}
+										if(this.value.length >= 2) {
+								        $.ajax({
+								            type: 'GET',
+								            url: '/search',
+								            data: {'value': this.value},
+								            response: 'text',
+
+								            success: function(data) { //.replace(/</g,"&lt;")
+								                $("#list").html('');
+								                for(var i = 0; i < data.length; i++) {
+								                    $("#list").append('<option>' +  data[i].name + '</option>');
+								                }
+								            }
+								        })
+								    }
+								})
+
+								$('.search-mf').bind("change keyup", function() {
+										if (this.value.length == 0) {
+												$("#list-mf").html('');
+										}
+										if(this.value.length >= 2) {
+								        $.ajax({
+								            type: 'GET',
+								            url: '/search',
+								            data: {'value': this.value},
+								            response: 'text',
+
+								            success: function(data) {
+								                $("#list-mf").html('');
+								                for(var i = 0; i < data.length; i++) {
+								                    $("#list-mf").append('<option>' +  data[i].name + '</option>');
+								                }
+								            }
+								        })
+								    }
+								})
+						})
+				</script>
 
 				<script type="text/javascript">
 					  var csrftoken = $.cookie('csrftoken');
