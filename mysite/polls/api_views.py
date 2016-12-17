@@ -5,6 +5,8 @@ from django.conf import settings
 from polls.models import User, Film
 import math, hashlib, datetime, os, json
 
+count_films_on_page = 4
+
 def make_password(password):
     salt = '&e2g$jR-%/frwR0()2>d#'
     hash = hashlib.md5(bytes(password + salt, encoding = 'utf-8')).hexdigest()
@@ -32,7 +34,7 @@ def error(request):
 
 def signup(request):
     if request.method == 'POST':
-        name = ' '.join(request.POST.get('name', '').strip().split()) # убирает пробелы beg-end; несколько пробелов заменяются одним
+        name = ' '.join(request.POST.get('name', '').strip().split())
         mail = request.POST.get('mail', '').replace(' ', '')
         password_1 = request.POST.get('password_1', '').replace(' ', '')
         password_2 = request.POST.get('password_2', '').replace(' ', '')
@@ -42,7 +44,6 @@ def signup(request):
                 try:
                     password = make_password(password_1)
                     User.objects.create(name = name, mail = mail, password = password)
-                    # user, created = User.objects.get_or_create(mail = mail, defaults = {'name': name, 'password': password_1})
 
                     return HttpResponse(json.dumps({'Success': 'Registration completed successfully'}), content_type = 'application/json')
                 except NotUniqueError:
@@ -58,7 +59,6 @@ def signup(request):
     else:
         return HttpResponse(json.dumps({'Error': '405 Method Not Allowed!'}), content_type = 'application/json')
 
-#new
 def login(request):
     if request.method == 'POST':
         mail = request.POST.get('mail', '').replace(' ', '')
@@ -79,7 +79,6 @@ def login(request):
     else:
         return HttpResponse(json.dumps({'Error': '405 Method Not Allowed!'}), content_type = 'application/json')
 
-#new
 def logout(request):
     try:
         del request.session['id']
@@ -87,41 +86,164 @@ def logout(request):
         pass
     return HttpResponse(json.dumps({'Success': 'Logout completed successfully'}), content_type = 'application/json')
 
-# TODO: // json
 def films(request, page_number):
     if request.method == 'GET':
         value = ' '.join(request.GET.get('value', '').strip().split())
-        count_films_on_page = 4
+
+        beg = count_films_on_page * (int(page_number) - 1)
+        end = beg + count_films_on_page
 
         if not value:
-            films = Film.objects.all()
+            films = Film.objects.all()[beg:end]
         else:
-            films = Film.objects.filter(name__icontains = value)
+            films = Film.objects.filter(name__icontains = value)[beg:end]
 
-        if int(page_number) >= 1 and int(page_number) <= math.ceil(len(films) / count_films_on_page):
-            current_page = Paginator(films, count_films_on_page)
+        for film in films:
+            f = film.__dict__['_data']
+            f.update({'id': str(f['id'])})
 
-            for film in films:
-                print(film.__dict__['_data'].pop('id'))
-
-            json.dumps([film.__dict__['_data'] for film in films])
-            return HttpResponse(json.dumps([film.__dict__ for film in films]), content_type = 'application/json')
-        else:
-            return HttpResponse(json.dumps({'Error': '404 Not Found!'}), content_type = 'application/json')
+        return HttpResponse(json.dumps([f.__dict__['_data'] for f in films]), content_type = 'application/json')
     else:
         return HttpResponse(json.dumps({'Error': '405 Method Not Allowed!'}), content_type = 'application/json')
 
-# TODO: // json
 def filminfo(request, name):
     if request.method == 'GET':
         try:
             film = Film.objects.get(name = name)
-            print(film.__dict__['_data'].pop('id'))
+            f = film.__dict__['_data']
+            f.update({'id': str(f['id'])})
+
             return HttpResponse(json.dumps(film.__dict__['_data']), content_type = 'application/json')
         except:
             return HttpResponse(json.dumps({'Error': '404 Not Found!'}), content_type = 'application/json')
     else:
         return HttpResponse(json.dumps({'Error': '405 Method Not Allowed!'}), content_type = 'application/json')
+
+def myfilms(request, page_number):
+    if request.method == 'GET':
+        if 'id' in request.session:
+            value = ' '.join(request.GET.get('value', '').strip().split())
+
+            try:
+                user_id = request.session.get('id')
+                user = User.objects.get(id = user_id)
+
+                for film in user.films:
+                    try:
+                        f = Film.objects.get(id = film['film'].id)
+                    except:
+                        user.update(pull__films__id = film['id'])
+                        user.update(set__count = user.count - 1)
+
+                user = User.objects.get(id = user_id)
+
+                beg = count_films_on_page * (int(page_number) - 1)
+                end = beg + count_films_on_page
+
+                if not value:
+                    films = user.films[beg:end]
+                else:
+                    films = list(filter(lambda film: film['film'].name.lower().find(value.lower()) != -1, user.films))[beg:end]
+
+                for film in films:
+                    f = Film.objects.get(id = film['film'].id)
+
+                    for k in f.__dict__['_data'].keys():
+                        if k is not 'id':
+                            film.update({k: f.__dict__['_data'].setdefault(k)})
+                        else:
+                            film.update({'id': str(f['id'])})
+
+                    film.update({'date': str(film['date'])})
+                    film.pop('film')
+
+                return HttpResponse(json.dumps([f for f in films]), content_type = 'application/json')
+            except:
+                return HttpResponse(json.dumps({'Error': '404 Not Found!'}), content_type = 'application/json')
+        else:
+            return HttpResponse(json.dumps({'Error': '401 Unauthorized!'}), content_type = 'application/json')
+    else:
+        return HttpResponse(json.dumps({'Error': '405 Method Not Allowed!'}), content_type = 'application/json')
+
+def myfilminfo(request, name):
+    if request.method == 'GET':
+        if 'id' in request.session:
+            try:
+                user_id = request.session.get('id')
+                user = User.objects.get(id = user_id)
+
+                film = Film.objects.get(name = name)
+
+                for f in user.films:
+                    if film.id == f['id']:
+                        for k in film.__dict__['_data'].keys():
+                            if k is not 'id':
+                                f.update({k: film.__dict__['_data'].setdefault(k)})
+                            else:
+                                f.update({'id': str(film.id)})
+
+                        f.update({'date': str(f['date'])})
+                        f.pop('film')
+                        return HttpResponse(json.dumps(f), content_type = 'application/json')
+
+                return HttpResponse(json.dumps({'Error': '404 Not Found!'}), content_type = 'application/json')
+            except:
+                return HttpResponse(json.dumps({'Error': '404 Not Found!'}), content_type = 'application/json')
+        else:
+            return HttpResponse(json.dumps({'Error': '401 Unauthorized!'}), content_type = 'application/json')
+    else:
+        return HttpResponse(json.dumps({'Error': '405 Method Not Allowed!'}), content_type = 'application/json')
+
+def sort(request, page_number):
+    if request.method == 'GET':
+        if 'id' in request.session:
+            value = ' '.join(request.GET.get('value', '').strip().split())
+
+            if value == 'grade' or value == 'date':
+                try:
+                    user_id = request.session.get('id')
+                    user = User.objects.get(id = user_id)
+
+                    for film in user.films:
+                        try:
+                            f = Film.objects.get(id = film['film'].id)
+                        except:
+                            user.update(pull__films__id = film['id'])
+                            user.update(set__count = user.count - 1)
+
+                    user = User.objects.get(id = user_id)
+
+                    films = user.films
+
+                    beg = count_films_on_page * (int(page_number) - 1)
+                    end = beg + count_films_on_page
+
+                    films.sort(key = lambda x: x[value], reverse = True)
+                    films = films[beg:end]
+
+                    for f in films:
+                        film = Film.objects.get(id = f['id'])
+
+                        for k in film.__dict__['_data'].keys():
+                            if k is not 'id':
+                                f.update({k: film.__dict__['_data'].setdefault(k)})
+                            else:
+                                f.update({'id': str(film.id)})
+
+                        f.update({'date': str(f['date'])})
+                        f.pop('film')
+
+                    return HttpResponse(json.dumps([f for f in films]), content_type = 'application/json')
+                except:
+                    return HttpResponse(json.dumps({'Error': '404 Not Found!'}), content_type = 'application/json')
+            else:
+                return HttpResponse(json.dumps({'Error': '400 Bad Request!'}), content_type = 'application/json')
+        else:
+            return HttpResponse(json.dumps({'Error': '401 Unauthorized!'}), content_type = 'application/json')
+    else:
+        return HttpResponse(json.dumps({'Error': '405 Method Not Allowed!'}), content_type = 'application/json')
+
+
 
 # TODO: json (all)
 def rating(request): # переделать
@@ -176,69 +298,8 @@ def add(request):
     else:
         return HttpResponse(json.dumps({'Error': '405 Method Not Allowed!'}), content_type = 'application/json')
 
-# TODO: json (all)
-def sort(request):
-    if request.method == 'GET':
-        value = ' '.join(request.GET.get('value', '').strip().split())
 
-        if value:
-            if 'id' in request.session:
-                try:
-                    user_id = request.session.get('id')
-                    user = User.objects.get(id = user_id)
 
-                    #people = User.objects.order_by('-grade')    # поправить
-                    #for p in people:
-                        #print(p.name + '   ' + p.mail)
-
-                    return render(request, 'html/Error.html', {'error': 'Ок!'}) # изменить страницу
-                except:
-                    return render(request, 'html/Error.html', {'error': '404 Not Found!'})
-            else:
-                return render(request, 'html/Error.html', {'error': '401 Unauthorized!'})
-        else:
-            return render(request, 'html/Error.html', {'error': '400 Bad Request!'})
-    else:
-        return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
-
-# должен работать!!!
-# TODO: json
-def myfilms(request, page_number):
-    if request.method == 'GET':
-        value = ' '.join(request.GET.get('value', '').strip().split())
-        count_films_on_page = 4
-
-        if 'id' in request.session:
-            #try:
-            user_id = request.session.get('id')
-            user = User.objects.get(id = user_id)
-
-            if not value:
-                films = user.films
-            else:
-                films = list(filter(lambda film: film['film'].name == value, user.films))
-
-            if int(page_number) >= 1 and int(page_number) <= math.ceil(len(films) / count_films_on_page):
-                current_page = Paginator(films, count_films_on_page)
-
-                """print(films)
-                all_films = []
-                for film in films:
-                    red_id = film['film']['_ref'].id
-                    print(red_id)
-                    f = Film.objects.get(id = bson.objectid.ObjectId(red_id))
-                    print(f)
-                    all_films.append(f)
-                print (all_films)"""
-                return HttpResponse(json.dumps({'Error': 'Сейчас это не работает((('}), content_type = 'application/json')
-            else:
-                return HttpResponse(json.dumps({'Error': '404 Not Found!'}), content_type = 'application/json')
-            #except:
-                #return HttpResponse(json.dumps({'Error': '404 Not Found!'}), content_type = 'application/json')
-        else:
-            return HttpResponse(json.dumps({'Error': '401 Unauthorized!'}), content_type = 'application/json')
-    else:
-        return HttpResponse(json.dumps({'Error': '405 Method Not Allowed!'}), content_type = 'application/json')
 
 # должен работать!!!
 def addfilm(request):
