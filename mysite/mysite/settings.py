@@ -13,6 +13,7 @@
 import os
 
 PROD_MONGODB = os.environ['PROD_MONGODB']
+SALT = os.environ['SALT']
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -74,7 +75,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 # Database
 from polls.mongoengine import connect
-connect('work', 'default', host = 'mongodb://work:work@ds131878.mlab.com:31878/work')
+connect('work', 'default', host = PROD_MONGODB)
 
 
 DATABASES = {

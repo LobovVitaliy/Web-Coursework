@@ -9,8 +9,7 @@ import math, hashlib, datetime, os, re, json
 count_films_on_page = 4
 
 def make_password(password):
-    salt = '&e2g$jR-%/frwR0()2>d#'
-    hash = hashlib.md5(bytes(password + salt, encoding = 'utf-8')).hexdigest()
+    hash = hashlib.md5(bytes(password + settings.SALT, encoding = 'utf-8')).hexdigest()
     return hash
 
 def check_password(hash, password):
@@ -60,7 +59,6 @@ def error(request):
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
 def home(request):
-    print(settings.PROD_MONGODB)
     if request.method == 'GET':
         args = getArgs(request)
         return render(request, 'html/home.html', args)
