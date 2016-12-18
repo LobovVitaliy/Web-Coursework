@@ -12,6 +12,8 @@
 
 import os
 
+PROD_MONGODB = os.environ['PROD_MONGODB']
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -36,12 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #'mongoengine.django.mongo_auth', # new
     'polls',
 ]
-
-#AUTH_USER_MODEL = 'mongo_auth.MongoUser'  # new
-#MONGOENGINE_USER_DOCUMENT = 'mongoengine.django.auth.User'  # new
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -75,25 +73,6 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/1.10/ref/settings/#databases
-
-# import dj_database_url
-#
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
-
-# from mongoengine import connect
-# connect('test')
-#
-# DATABASES = {
-#     'default': {'ENGINE': 'django.db.backends.dummy'}
-# }
-
-
 from polls.mongoengine import connect
 connect('work', 'default', host = 'mongodb://work:work@ds131878.mlab.com:31878/work')
 
@@ -104,66 +83,11 @@ DATABASES = {
     }
 }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.dummy',
-#         'NAME': 'work',
-#         'USER': 'work',
-#         'PASSWORD': 'work',
-#         'HOST': 'ds131878.mlab.com',
-#         'PORT': '31878',
-#     }
-# }
-
-
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 ALLOWED_HOSTS = ['*']
 
-
-#import dj_database_url
-#DATABASES['default'] = dj_database_url.config(default='mongodb://work:work@ds131878.mlab.com:31878/work')
-
-SESSION_ENGINE = 'polls.mongoengine.django.sessions'  # new
-#SESSION_SERIALIZER = 'mongoengine.django.sessions.BSONSerializer'   # new
-
-# AUTHENTICATION_BACKENDS = [ # new
-#     'mongoengine.django.auth.MongoEngineBackend',
-# ]
-
-# REST_FRAMEWORK = {
-#     'DEFAULT_RENDERER_CLASSES': (
-#         'rest_framework.renderers.JSONRenderer',
-#         'rest_framework.renderers.BrowsableAPIRenderer',
-#     )
-# }
-
-# Password validation
-# https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
-
-PASSWORD_HASHERS = [
-    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
-    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
-    'django.contrib.auth.hashers.Argon2PasswordHasher',
-    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
-    'django.contrib.auth.hashers.BCryptPasswordHasher',
-]
-
-# коментить?
-# AUTH_PASSWORD_VALIDATORS = [
-#     {
-#         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-#     },
-#     {
-#         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-#     },
-#     {
-#         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-#     },
-#     {
-#         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-#     },
-# ]
+SESSION_ENGINE = 'polls.mongoengine.django.sessions'
 
 
 # Internationalization

@@ -60,6 +60,7 @@ def error(request):
         return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
 
 def home(request):
+    print(settings.PROD_MONGODB)
     if request.method == 'GET':
         args = getArgs(request)
         return render(request, 'html/home.html', args)
