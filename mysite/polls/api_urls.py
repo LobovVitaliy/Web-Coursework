@@ -13,25 +13,8 @@ urlpatterns = [
     url(r'^myfilminfo/([\w.,! -]+)$', api_views.myfilminfo, name = 'myfilminfo'),
     url(r'^sorted/page/(\d+)$', api_views.sort, name = 'sort'),
 
-
-    url(r'^add$', api_views.add, name = 'add'),
-    #url(r'^delete$', api_views.delete, name = 'delete'),
-    #url(r'^rating$', api_views.rating, name = 'rating'),
-    #url(r'^delmyfilms$', api_views.delmyfilms, name = 'delmyfilms'),
-
-    #url(r'^sort$', api_views.sort, name = 'sort'),
-
     # Admin
     url(r'^addfilm$', api_views.addfilm, name = 'addfilm'),
 
     url(r'^', api_views.error, name = "error")
-
-
-    #url(r'^search$', api_views.search, name = 'search'),
-    #url(r'^sorted/page/(\d+)$', api_views.sort, name = 'sort'),
-
-    # url(r'^add$', api_views.add, name = 'add'),
-    # url(r'^delete$', api_views.delete, name = 'delete'),
-    # url(r'^rating$', api_views.rating, name = 'rating'),
-    # url(r'^delmyfilms$', api_views.delmyfilms, name = 'delmyfilms'),
 ]
