@@ -243,86 +243,35 @@ def sort(request, page_number):
     else:
         return HttpResponse(json.dumps({'Error': '405 Method Not Allowed!'}), content_type = 'application/json')
 
-
-
-# TODO: json (all)
-def rating(request): # переделать
-    if request.method == 'POST':
-        name = ' '.join(request.POST.get('name', '').strip().split())
-        grade = request.POST.get('grade', '').replace(' ', '')
-
-        #film = Film.objects.get(name = name)
-
-        #user = User.objects.get(films = film)
-        #user.update(add_to_set__films = {'grade': 12})
-
-        if name and grade:
-            if 'id' in request.session:
-                try:
-                    user_id = request.session.get('id')
-                    user = User.objects.get(id = user_id)
-
-                    #user.update(set__films__grade = grade)
-
-                    #Film.objects(name = name).update(set__film = grade) # изменить бд, проверки
-                    return redirect('/filminfo/' + name)
-                except:
-                    return render(request, 'html/Error.html', {'error': '404 Not Found!'})
-            else:
-                return render(request, 'html/Error.html', {'error': '401 Unauthorized!'})
-        else:
-            return render(request, 'html/Error.html', {'error': '400 Bad Request!'})
-    else:
-        return render(request, 'html/Error.html', {'error': '405 Method Not Allowed!'})
-
-# должен работать!!! проверить на уникальность
-def add(request):
-    if request.method == 'POST':
-        name = ' '.join(request.POST.get('name', '').strip().split())
-
-        if name:
-            if 'id' in request.session:
-                try:
-                    user_id = request.session.get('id')
-                    user = User.objects.get(id = user_id)
-                    film = Film.objects.get(name = name)
-                    myfilm = {'film': film, 'grade': 0, 'date': datetime.datetime.now()}
-                    user.update(add_to_set__films = myfilm)
-                    return HttpResponse(json.dumps({'Success': 'Successfully added'}), content_type = 'application/json')
-                except:
-                    return HttpResponse(json.dumps({'Error': '404 Not Found!'}), content_type = 'application/json')
-            else:
-                return HttpResponse(json.dumps({'Error': '401 Unauthorized!'}), content_type = 'application/json')
-        else:
-            return HttpResponse(json.dumps({'Error': '400 Bad Request!'}), content_type = 'application/json')
-    else:
-        return HttpResponse(json.dumps({'Error': '405 Method Not Allowed!'}), content_type = 'application/json')
-
-
-
-
-# должен работать!!!
 def addfilm(request):
     if request.method == 'POST':
-        name = request.POST.get('name', '').strip()
-        name = ' '.join(name.split()) # несколько пробелов заменяются одним
-        image = save_file(request.FILES['image'], 'image')
-        about = request.POST.get('about', '').replace(' ', '')
-        country = request.POST.get('country', '').replace(' ', '')
-        year = request.POST.get('year', '').replace(' ', '')
-        genre = request.POST.get('genre', '').replace(' ', '')
-        duration = request.POST.get('duration', '').replace(' ', '')
-        producer = request.POST.get('producer', '').replace(' ', '')
-        actors = request.POST.get('actors', '').replace(' ', '')
-        video = save_file(request.FILES['video'], 'video')
-
         if 'id' in request.session:
+            try:
+                name = ' '.join(request.POST.get('name', '').strip().split())
+                image = save_file(request.FILES['image'], 'image')
+                about = ' '.join(request.POST.get('about', '').strip().split())
+                country = ' '.join(request.POST.get('country', '').strip().split())
+                year = request.POST.get('year', '').replace(' ', '')
+                genre = ' '.join(request.POST.get('genre', '').strip().split())
+                duration = request.POST.get('duration', '').replace(' ', '')
+                producer = ' '.join(request.POST.get('producer', '').strip().split())
+                actors = ' '.join(request.POST.get('actors', '').strip().split())
+                video = save_file(request.FILES['video'], 'video')
+            except:
+                return HttpResponse(json.dumps({'Error': 'Неверный ввод!'}), content_type = 'application/json')
+
             user_id = request.session.get('id')
             user = User.objects.get(id = user_id)
 
             if user.role == 'admin':
-                if name and image and about and country and year and genre and duration and producer and actors and video:
+                if name and image and about and country and year and genre and duration and producer and actors and video and \
+                    re.match(r"^[\w.,! -]+$", name) and re.match(r"^\d{4}$", year) and re.match(r"^\d{2}:\d{2}:\d{2}$", duration):
+
                     try:
+                        film = Film.objects.filter(name = name)
+                        if len(film):
+                            return HttpResponse(json.dumps({'Error': 'Фильм уже был добавлен!'}), content_type = 'application/json')
+
                         film = Film.objects.create(
                             name = name,
                             image = image,
@@ -335,7 +284,7 @@ def addfilm(request):
                             actors = actors,
                             video = video
                         )
-                        # get_or_create
+
                         return HttpResponse(json.dumps({'Success': 'Successfully added'}), content_type = 'application/json')
                     except:
                         return HttpResponse(json.dumps({'Error': 'Неверный ввод!'}), content_type = 'application/json')
